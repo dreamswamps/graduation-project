@@ -1,0 +1,26 @@
+package com.example.POJO;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.Date;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class Application {
+    private Integer aid;
+    private String type;
+    private String apply_account;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    private Date apply_time;
+    private Integer approval;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    private Date approved_time;
+    private Integer has_completed;
+    private Integer working;
+    private Integer worker;
+    private String reason;
+}

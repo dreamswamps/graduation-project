@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.Mapper.ApplyMapper">
+
+    <select id="pendingApplication" resultType="com.example.POJO.Application">
+        SELECT * FROM application
+        <where>
+            has_completed = 0 AND working = 0
+            <if test="type != null and type != '' ">
+                AND type like concat('%',#{type},'%')
+            </if>
+            <if test="apply_account != null and apply_account != '' ">
+                AND apply_account = #{apply_account}
+            </if>
+        </where>
+        ORDER BY apply_time
+        <choose>
+            <when test="is_DESC == true">
+                DESC
+            </when>
+            <otherwise>
+                ASC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="checkWorkerId" resultType="integer">
+        SELECT worker FROM application
+        WHERE aid = #{aid} and has_completed = 0
+    </select>
+
+    <select id="selectByAid" resultType="com.example.POJO.Application">
+        SELECT * FROM application
+        WHERE aid = #{aid}
+    </select>
+
+
+    <update id="lockApplication">
+        UPDATE application SET working = 1, worker = #{currentUserId}, approved_time = #{now}
+        WHERE aid = #{aid} and has_completed = 0
+    </update>
+
+    <update id="unlockApplication">
+        UPDATE application SET working = 0, worker = null
+        WHERE aid = #{aid} and has_completed = 0
+    </update>
+
+    <update id="resultApplication">
+        UPDATE application SET approval = #{approval}, approved_time = #{approved_time},
+                               has_completed = 1, working = 0, worker = #{worker}, reason = #{reason}
+        WHERE aid = #{aid}
+    </update>
+
+    <update id="clearApplication">
+        UPDATE application SET working = 0
+        WHERE working = 1 AND approved_time &lt; #{deadline}
+    </update>
+
+</mapper>
