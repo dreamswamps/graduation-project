@@ -1,0 +1,138 @@
+# =============================================
+# 项目根目录 .gitignore
+# 整合前后端忽略规则
+# =============================================
+
+# ==================== 日志文件 ====================
+# 通用日志文件
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# 后端日志
+logs/
+*.log
+backend/logs/
+
+# ==================== 依赖和构建输出 ====================
+# 前端依赖和构建
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/coverage/
+
+# 后端构建输出
+backend/target/
+backend/build/
+backend/out/
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+
+# ==================== 环境配置和敏感文件 ====================
+# 环境变量文件（严格忽略）
+.env
+.env.*
+!*.env.example
+!*.env.*.example
+
+# 前端环境配置
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+!frontend/.env.*.example
+
+# 后端环境配置
+backend/.env
+backend/.env.*
+!backend/.env.example
+!backend/.env.*.example
+
+# 应用配置文件（根据需要取消注释）
+# backend/src/main/resources/application-dev.yml
+# backend/src/main/resources/application-local.yml
+# backend/src/main/resources/application-test.yml
+
+# ==================== 操作系统文件 ====================
+# 系统文件
+.DS_Store
+Thumbs.db
+*.db
+
+# ==================== IDE和编辑器文件 ====================
+# VS Code
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+*.iws
+
+# 其他编辑器
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ==================== 测试相关 ====================
+# 测试输出
+/cypress/videos/
+/cypress/screenshots/
+frontend/coverage/
+backend/coverage/
+
+# ==================== 构建工具和缓存 ====================
+# Node.js 构建缓存
+*.tsbuildinfo
+
+# 包管理器
+.pnp
+.pnp.js
+
+# 包锁文件备份
+pnpm-lock.yaml.bak
+yarn.lock.bak
+package-lock.json.bak
+
+# Maven
+backend/.m2/
+backend/.mvn/
+backend/mvnw
+backend/mvnw.cmd
+
+# Gradle
+backend/.gradle/
+backend/gradle/
+backend/gradlew
+backend/gradlew.bat
+
+# ==================== 应用特定文件 ====================
+# 配置文件备份
+vue.config.js.bak
+vite.config.js.bak
+*.vue.bak
+
+# 上传文件和用户数据
+files/
+uploads/
+backend/files/
+backend/uploads/
+
+# ==================== 临时文件 ====================
+# 临时文件
+*.tmp
+*.temp
+*.bak
