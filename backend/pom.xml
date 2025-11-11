@@ -89,7 +89,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
-
+		<dependency>
+			<groupId>me.paulschwarz</groupId>
+			<artifactId>spring-dotenv</artifactId>
+			<version>4.0.0</version> <!-- 最新版本可到Maven中央仓库查询 -->
+		</dependency>
 	</dependencies>
 
 	<build>

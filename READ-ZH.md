@@ -42,3 +42,57 @@
 1. **Game模块**
     - 目标：一个仿照谷歌小恐龙的小游戏，支持保存分数和展示排行榜
     - 目前：仅实现简单的控制，暂停，碰撞检测
+
+## 🚀 快速开始
+
+### 环境要求
+
+- `Node.js`: 20.18.2
+- `Java`: 17
+- `Spring Boot`: 3.5.5
+- `MySQL`: 8.0.40
+
+### 安装与运行
+
+1. 克隆项目：
+    ```bash
+    git clone https://github.com/dreamswamps/graduation-project.git
+    ```
+
+2. 安装前端依赖：
+    在/frontend文件夹下打开终端
+    ```bash
+    npm install
+    ```
+
+3. 安装后端依赖：
+    IDEA可能自动完成这一步，按需执行
+    在/backend文件下打开终端
+    ```bash
+    mvn clean install
+    ```
+
+4. 配置前端环境变量：<a id="frontend_env"></a>
+    - 在/frontend目录下创建名为`.env`的文件
+    - 编辑`.env`文件，填入以下内容：
+    ```
+    VITE_API_BASE_URL = 'http://localhost:8081'
+    ```
+    如果需要修改端口，则将8081替换为其他值
+
+5. 配置后端环境变量：<a id="backend_env"></a>
+    - 在/backend目录下创建名为`.env`的文件
+    - 编辑`.env`文件，填入并修改以下内容：
+    ```
+    DB_USERNAME=<MySQL用户名>
+    DB_PASSWORD=<MySQL密码>
+    DB_URL=jdbc:mysql://localhost:3306/project?serverTimezone=Asia/Shanghai
+    MAIL_HOST=smtp.qq.com
+    MAIL_USERNAME=<QQ邮箱>
+    MAIL_PASSWORD=<邮箱授权码>
+    JWT_SECRET=<JWTBase64密钥>
+    ```
+
+6. 配置数据库：
+    详见[db.sql](db.sql)
+
