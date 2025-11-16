@@ -96,3 +96,141 @@
 6. 配置数据库：
     详见[db.sql](db.sql)
 
+## 📖 使用说明 <a id="configuration"></a>
+
+1. **后端服务**：
+    - 将/backend文件夹移动到IDEA中打开
+    - 运行SpringBoot项目
+
+2. **前端服务**：
+    - 将/frontend文件夹移动到vscode中打开
+    - 在终端中输入以下内容
+    ```bash
+    npm run dev
+    ```
+    - 访问终端的网址
+
+## 📁 项目结构
+
+> 已剔除废弃部分。
+> 省略Springboot中结构重复的部分。例如，Mapper中已有`A.xml`文件，则在Controller等层不在出现类似`A.java`文件。
+> 如果出现`[ ]`表示该部分代码正在制作。
+
+- 根目录
+```
+graduation-project/
+├── 📁 backend      # 后端SpringBoot项目
+├── 📁 frontend     # 前端Vue3项目
+├── 📁 docs         # 项目文档
+└── .gitignore
+```
+
+- 后端文件夹
+```
+backend/
+├── 📄 files   # 用户上传文件（自动生成）
+├── 📁 src/main
+|   ├── 📁 java/com/example
+|   |   ├── 📁 Controller
+|   |   |   ├── FileController.java     # 用户文件操作
+|   |   |   └── UtilController.java     # 专门使用/Util方法
+|   |   |
+|   |   ├── 📁 Service
+|   |   |   ├── 📁 Strategy    # [ ] 申请相关策略模式
+|   |   |   |   ├── ApplyStrategyMap.java
+|   |   |   |   ├── ApprovalStrategy.java
+|   |   |   |   └── PwdResetStrategy.java
+|   |   |   |
+|   |   |   ├── ApplyMapService.java    # [ ] 申请类型匹配
+|   |   |   ├── RandomIntService.java   # 随机ID生成
+|   |   |   └── UtilService.java        # Util方法业务
+|   |   |
+|   |   ├── 📁 POJO
+|   |   |
+|   |   ├── 📁 Mapper
+|   |   |
+|   |   ├── 📁 Exception
+|   |   |   ├── CustomException.java    # 自定义异常类
+|   |   |   └── GlobalExceptionHandler.java     # 异常处理
+|   |   |
+|   |   ├── 📁 Util
+|   |   |   ├── 📁 ValidateCode
+|   |   |   |   ├── EmailHandlerConfig.java     # 邮件发送类
+|   |   |   |   ├── EmailHandlerCreator.java    # 邮件发送方法
+|   |   |   |   ├── ValidateCodeConfig.java     # 图片验证码类
+|   |   |   |   └── ValidateCodeCreator.java    # 图片验证码方法
+|   |   |   |
+|   |   |   ├── CorsConfig.java     # 跨域处理
+|   |   |   ├── JWTManager.java     # JWT管理
+|   |   |   └── Result.java         # 统一返回数据类
+|   |   |
+|   |   └── SpringBootDemoApplication.java
+|   |
+|   └── 📁 resources
+|       ├── 📁 Mapper
+|       |   ├── AdminAuthMapper.xml     # 用户身份认证
+|       |   ├── AdminMapper.xml         # 用户信息
+|       |   ├── ApplicationMapper.xml   # 用户申请
+|       |   ├── ApplyMapper.xml         # 管理员审批
+|       |   ├── ArticleMapper.xml       # 文章管理
+|       |   └── TodoListMapper.xml      # 待办事务
+|       |
+|       ├── 📁 templates
+|       |   └── EmailTemplate.html      # 邮件验证码模板
+|       |
+|       └── application.yml     # 属性配置
+|
+├── ⚙️ .env     # 环境配置（需手动创建）
+└── pom.xml     # 依赖配置
+```
+
+- 前端文件夹
+```
+frontend/
+├── 📁 public       # 少量图片资源
+|
+├── 📁 src
+|   ├── 📁 assets       # 静态资源
+|   |
+|   ├── 📁 components/base  # 自定义封装组件
+|   |   └── RippleCircleButton.vue  # 涟漪动效按钮
+|   |
+|   ├── 📁 router
+|   |   └── index.js    # 路由管理
+|   |
+|   ├── 📁 utils
+|   |   └── request.js  # 请求管理
+|   |
+|   ├── 📁 views
+|   |   ├── 📁 Login
+|   |   |   ├── 📁 ResetPwdCom              # 重置密码子页面
+|   |   |   |   ├── CheckApplication.vue    # 查看申请
+|   |   |   |   ├── InfoConfirm.vue         # 信息确认
+|   |   |   |   ├── InfoGather.vue          # 信息收集
+|   |   |   |   ├── StepResult.vue          # 结果展示
+|   |   |   |   └── VirefyCode.vue          # 验证码检验
+|   |   |   |
+|   |   |   ├── Forgetpwd.vue   # 重置密码页面
+|   |   |   ├── Login.vue       # 登录页面
+|   |   |   └── Register.vue    # 注册页面
+|   |   |
+|   |   ├── 404.vue             # 未知路由跳转
+|   |   ├── Admin.vue           # 用户信息管理
+|   |   ├── Article.vue         # 文章管理
+|   |   ├── Board.vue           # 待办事务
+|   |   ├── Data.vue            # 数据管理
+|   |   ├── ElementTest.vue     # 测试页
+|   |   ├── Home.vue            # 测试页
+|   |   ├── Manager.vue         # 背景父组件
+|   |   └── UserInfo.vue        # 个人信息
+|   |
+|   ├── App.vue
+|   └── main.js
+|
+├── ⚙️ .env         # 环境配置（需手动创建）
+├── index.html
+├── jsconfig.json
+├── package-lock.json
+├── package.json
+└── vite.config.js
+```
