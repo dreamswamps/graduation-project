@@ -4,7 +4,7 @@
 
 ## 语言
 
-- [英文](README.md)
+- [English](README.md)
 - [中文](README-ZH.md)
 
 ## ✨ 功能描述
