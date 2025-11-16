@@ -361,7 +361,7 @@ const editorConfig = {
 
 // 配置上传图片的目标地址
 editorConfig.MENU_CONF['uploadImage'] = {
-  server: `${baseUrl}/files/wangEditor/upload`,
+  server: `${baseURL}/files/wangEditor/upload`,
   fieldName: 'file'
 }
 

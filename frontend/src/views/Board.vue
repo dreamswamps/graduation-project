@@ -495,6 +495,11 @@ const SaveDrag=()=>{
     /* 移动到上层，可见 */
     width: 100%;
 }
+/* 确保所有子元素在背景层之上 */
+.Collapse_Title > * {
+    position: relative;
+    z-index: 1;
+}
 .Collapse_Icon{
     margin-right: 16px;
     color: #000;
@@ -513,7 +518,7 @@ const SaveDrag=()=>{
     height: 100%;
     transition: left 0.3s ease;
     /* 在下层，保证不可见不遮挡 */
-    z-index: -1;
+    z-index: 0;
 }
 .Collapse_Title[tag-like="0"]::before{
     background:linear-gradient(to right, white, #c5ecff);
