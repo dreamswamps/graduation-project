@@ -1,6 +1,7 @@
 # Multimodal Business Collaboration Platform
 
 > A multimodal business collaboration platform based on `Vue3` and `Springboot`. It integrates functions such as "Todo Management", "Article Management", "Application and Approval", and "User Permission Management" into a comprehensive management system.
+> Tips: This .md is translated by LLM.
 
 ## Language
 
