@@ -23,6 +23,7 @@ public class PwdResetStrategy implements ApprovalStrategy{
         has_completed=1,
         working=0,
         worker(自带)
+        apply_account
         2.重置密码
     拒绝：
         更新approval=0(已知的)
@@ -37,7 +38,6 @@ public class PwdResetStrategy implements ApprovalStrategy{
         application.setApproved_time(new Date());
         application.setHas_completed(1);
         application.setWorking(0);
-
         try {
             applyMapper.resultApplication(application);
             adminAuthMapper.ResetPwdByAccount("123456", application.getApply_account());

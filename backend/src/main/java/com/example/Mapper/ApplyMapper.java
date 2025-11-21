@@ -2,9 +2,11 @@ package com.example.Mapper;
 
 import com.example.POJO.Application;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface ApplyMapper {
@@ -16,7 +18,8 @@ public interface ApplyMapper {
 
     int resultApplication(Application application);
 
-    Integer checkWorkerId(Integer aid);
+//    疑点报错，目前不影响运行
+    Map<String, Object> checkWorkerId(Integer aid);
 
     void clearApplication(LocalDateTime deadline);
 

@@ -8,14 +8,16 @@ import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Service
 public class ApplyService {
     @Resource
     private ApplyMapper applyMapper;
+    @Resource
+    private ApplyMapService applyMapService;
 
 //    boolean需要提供，执行该方法时顺道清理状态异常的申请
     public List<Application> pendingApplication(String type, String apply_account, boolean is_DESC) {
@@ -37,25 +39,25 @@ public class ApplyService {
     }
 
 //    更新审批结果approval。同时需要更新:审批时间，完成状态，禁用状态
-//    更新:现在直接传递类，该类应该至少包含了aid,approval,和reason(可为null)
+//    更新:现在直接传递类，该类应该至少包含了aid,approval,type和reason(可选)
     public boolean resultApplication(Application application, Integer currentUserId) {
         try {
-            if (!checkWorkerId(application.getAid(), currentUserId)) {
+
+            Map<String, Object> map = applyMapper.checkWorkerId(application.getAid());
+
+            if (!Objects.equals(map.get("worker"), currentUserId)) {
                 return false;
             }
 //            为了避免传输进乱七八糟的值，只有为1时才设置为1(通过)，其他均为0
+            application.setApply_account(map.get("apply_account").toString());
             application.setApproval((application.getApproval() == 1) ? 1 : 0);
-            application.setApproved_time(new Date());
             application.setWorker(currentUserId);
-            return applyMapper.resultApplication(application) > 0;
+            applyMapService.dispatch(application);
+            return true;
         }catch (Exception e) {
+//            e.printStackTrace();
             return false;
         }
-    }
-
-//    检查请求修改的id是否和aid对应的worker匹配
-    public boolean checkWorkerId(Integer aid, Integer currentUserId) {
-        return Objects.equals(currentUserId, applyMapper.checkWorkerId(aid));
     }
 
     public void clearApplication() {

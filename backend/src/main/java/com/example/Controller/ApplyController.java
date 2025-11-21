@@ -58,7 +58,13 @@ public class ApplyController {
 
     /*
     管理员审批申请
-    需要审批结果1->通过/other->拒绝，和对应的aid
+    需要审批结果1->通过/other->拒绝
+    {
+        "aid":13,
+        "approval":0,
+        "type":"pwd-reset",
+        "reason":"纯属测试"(可选)
+    }
     审批完毕后解锁working并设置完成时间
     更新：为了支持策略模式的可拓展性和针对性，现在该接口被升级为需要提供type类型和原因reason
          同时，考虑到需要的数据量增多，修改为使用body直接传递类
