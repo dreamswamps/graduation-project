@@ -10,7 +10,7 @@ const router = createRouter({
     },
     {
       path:'/1',
-      component: () => import('../views/Game/Dragon.vue'),
+      component: () => import('../views/Authorization/ApprovalList.vue'),
     },
     {
       path: '/manager',
