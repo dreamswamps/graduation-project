@@ -1,3 +1,5 @@
+import ApprovalDetail from '@/views/Authorization/ApprovalDetail.vue'
+import UnifiedApply from '@/views/Authorization/UnifiedApply.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
@@ -8,15 +10,27 @@ const router = createRouter({
       path: '/',
       redirect: '/manager',
     },
-    {
-      path:'/1',
-      component: () => import('../views/Authorization/ApprovalList.vue'),
-    },
+
     {
       path: '/manager',
       name: '首页',
       component: () => import('../views/Manager.vue'),
       children: [
+        {
+          path: 'approval-detail',
+          name: '申请详情',
+          component: ApprovalDetail
+        },
+        {
+          path: 'unified-apply',
+          name: '申请大厅',
+          component: UnifiedApply,
+        },
+        {
+          path:'approval-list',
+          name:'审批申请',
+          component: () => import('../views/Authorization/ApprovalList.vue')
+        },
         {
           path: 'info',
           name: '个人资料',

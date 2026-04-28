@@ -30,13 +30,15 @@ public class FileController {
     AdminService adminService;
 
 //    获取到当前项目的根路径 => 目录路径
-    public static final String filePath = System.getProperty("user.dir")+"/files/";
+    public static final String PerFilePath = System.getProperty("user.dir")+"/files/permanent";
+    public static final String TemFilePath = System.getProperty("user.dir")+"/files/temporary";
+
 
     @PostMapping("/upload")
     public Result upload(@RequestParam("file") MultipartFile file) throws IOException {
         String originalFilename = file.getOriginalFilename();
 
-        Path upload_path = Path.of(filePath);
+        Path upload_path = Path.of(PerFilePath);
 //        判断是否存在对应目录，没有则创建目录
         if(!Files.isDirectory(upload_path)){
 //            创建多级目录，如果upload_path中包含父级目录，也能成功创建
@@ -60,6 +62,27 @@ public class FileController {
     }
 
     /*
+    用于上传至缓存文件夹
+    该接口返回的数据中，仅包含文件名称，不进行地址拼接
+    实则复制上面的代码=-=
+     */
+    @PostMapping("/tem/upload")
+    public Result temUpload(@RequestParam("file") MultipartFile file) throws IOException {
+        String originalFilename = file.getOriginalFilename();
+        Path upload_path = Path.of(TemFilePath);
+        if(!Files.isDirectory(upload_path)){
+            Files.createDirectories(upload_path);
+        }
+        String fileName = System.currentTimeMillis() + "_" + originalFilename;
+        try {
+            file.transferTo(upload_path.resolve(fileName));
+        }catch (IOException e){
+            throw new CustomException("500","文件上传失败");
+        }
+        return Result.success(fileName);
+    }
+
+    /*
     http://localhost:8081/files/download/1756551034033_4549-2024-08-09095055-1723211455239.jpg
     可以直接在浏览器中完成下载
      */
@@ -73,7 +96,7 @@ public class FileController {
 //            输出流
             ServletOutputStream os = response.getOutputStream();
 //            获取文件的字节流/字节数组
-            byte[] bytes = Files.readAllBytes(Path.of(filePath).resolve(fileName));
+            byte[] bytes = Files.readAllBytes(Path.of(PerFilePath).resolve(fileName));
 //            在输出流中以字节流的新式传递数据
             os.write(bytes);
 //            刷新输出流并关闭输出流
@@ -94,7 +117,7 @@ public class FileController {
         Map<String,Object> urlmap = new HashMap<>();
         try {
             String originalFilename = file.getOriginalFilename();
-            Path uploadPath = Path.of(filePath);
+            Path uploadPath = Path.of(PerFilePath);
             if (!Files.isDirectory(uploadPath)) {
                 Files.createDirectories(uploadPath);
             }
@@ -242,4 +265,115 @@ public class FileController {
             throw new RuntimeException("导入Excel失败", e);
         }
     }
+
+    /*
+    根据传入的文件名称数组批量删除文件
+    该接口只能删除tem缓存文件夹中的文件
+     */
+    @PostMapping("/tem/delete")
+    public Result temDeleteFile(@RequestBody List<String> fileNames){
+        if(fileNames == null || fileNames.isEmpty()){
+            return Result.error("400","至少提供一个需要删除的文件名");
+        }
+
+        List<String> failFiles = new ArrayList<>();
+        List<String> successFiles = new ArrayList<>();
+        for (String fileName : fileNames) {
+            try {
+//                检测空文件名
+                if (fileName == null || fileName.isEmpty()) {
+                    failFiles.add(fileName + "（空文件名）");
+                    continue;
+                }
+
+//                防止能够修改文件路径的文件名
+                if (fileName.contains("..") || fileName.contains("/") || fileName.contains("\\")) {
+                    failFiles.add(fileName + "（非法文件名）");
+                    continue;
+                }
+
+//                开始删除文件
+                Path filePath = Path.of(FileController.TemFilePath).resolve(fileName);
+                if (!Files.exists(filePath)) {
+                    failFiles.add(fileName + "（文件不存在）");
+                }
+
+                Files.delete(filePath);
+                successFiles.add(fileName);
+            } catch (IOException e) {
+                failFiles.add(fileName + "（删除失败）");
+            }
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("failFiles", failFiles);
+        result.put("successFiles", successFiles);
+
+        if (failFiles.isEmpty()) {
+            return Result.success("文件删除成功");
+        } else if (successFiles.isEmpty()) {
+            return Result.error("500","所有文件删除失败");
+        } else {
+            return Result.success("部分文件删除成功",result);
+        }
+    }
+
+    /*
+    该接口用于将tem文件夹的指定文件移动至per文件夹中
+     */
+    @PostMapping("/tem/move")
+    public Result temMoveFileToPer(@RequestBody List<String> fileNames){
+        if(fileNames == null || fileNames.isEmpty()){
+            return Result.error("400","至少提供一个需要移动的文件名");
+        }
+
+        List<String> failFiles = new ArrayList<>();
+        List<String> successFiles = new ArrayList<>();
+        List<String> successFilesPath = new ArrayList<>();
+        for (String fileName : fileNames) {
+            try {
+                if (fileName == null || fileName.isEmpty() || fileName.contains("..") || fileName.contains("/") || fileName.contains("\\")) {
+                    failFiles.add(fileName + "（非法文件）");
+                    continue;
+                }
+
+                Path temFilePath = Path.of(FileController.TemFilePath).resolve(fileName);
+                Path perFilePath = Path.of(FileController.PerFilePath).resolve(fileName);
+                if (!Files.exists(temFilePath)) {
+                    failFiles.add(fileName + "（未找到文件）");
+                    continue;
+                }
+//                乐观认为所有move操作都是成功的
+                successFiles.add(fileName);
+                Files.move(temFilePath, perFilePath);
+            } catch (IOException e) {
+                failFiles.add(fileName + "（异常文件）");
+            }
+        }
+
+//        所有移动操作后等待100ms检查预期成功的文件是否已经存在
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {}
+
+        for (String fileName : successFiles) {
+            try {
+                Path perFilePath = Path.of(FileController.PerFilePath).resolve(fileName);
+
+                if (Files.exists(perFilePath)) {
+                    successFilesPath.add("http://localhost:8081/files/download/" + fileName);
+                } else {
+                    failFiles.add(fileName + "（移动失败）");
+                }
+            } catch (Exception e) {
+                failFiles.add((fileName + "（异常文件）"));
+            }
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("failFiles", failFiles);
+        result.put("successFilesPath", successFilesPath);
+        return Result.success("文件移动完毕",result);
+    }
+
 }

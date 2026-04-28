@@ -14,6 +14,9 @@ import java.util.Map;
 public interface AdminMapper {
     List<Admin> SelectAll(Admin admin);
 
+    @Select("SELECT name FROM admin WHERE id = #{id}")
+    String GetNameById(int id);
+
     @Select("SELECT * FROM admin WHERE id = #{id}")
     Admin SelectById(int id);
 

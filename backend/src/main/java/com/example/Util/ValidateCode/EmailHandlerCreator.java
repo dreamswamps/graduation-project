@@ -1,12 +1,8 @@
 package com.example.Util.ValidateCode;
 
-import com.example.Exception.CustomException;
 import com.example.Util.Result;
 import jakarta.annotation.Resource;
 import jakarta.mail.internet.InternetAddress;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;

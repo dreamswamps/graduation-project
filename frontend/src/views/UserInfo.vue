@@ -264,38 +264,67 @@ const handleAvatarSuccess=(res)=>{
 </script>
 <style scoped>
 .cell-item {
-  display: flex;
-  align-items: center;
+    display: flex;
+    align-items: center;
 }
-.Container{
+.Container {
     padding: 36px;
-
 }
+/* 统一卡片风格 */
+.Card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.10);
+    padding: 24px 32px;
+    margin-bottom: 20px;
+    transition: box-shadow 0.2s;
+}
+.Card:hover {
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.18);
+}
+/* 统一按钮风格 */
+.el-button {
+    border-radius: 8px;
+    font-weight: 500;
+    letter-spacing: 1px;
+}
+/* 表单输入统一 */
+.el-form-item {
+    margin-bottom: 18px;
+}
+.el-input, .el-select, .el-date-picker {
+    border-radius: 8px;
+}
+/* 弹窗风格 */
+.el-dialog {
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.18);
+}
+/* 头像上传统一 */
 .avatar-uploader .avatar {
-  width: 120px;
-  height: 120px;
-  display: block;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    display: block;
+    border: 2px solid #e6e6e6;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.10);
 }
-</style>
-<style>
 .avatar-uploader .el-upload {
-  border: 1px dashed var(--el-border-color);
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: var(--el-transition-duration-fast);
+    border: 1px dashed var(--el-border-color);
+    border-radius: 8px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: var(--el-transition-duration-fast);
 }
-
 .avatar-uploader .el-upload:hover {
-  border-color: var(--el-color-primary);
+    border-color: #409eff;
 }
-
 .el-icon.avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 120px;
-  height: 120px;
-  text-align: center;
+    font-size: 28px;
+    color: #8c939d;
+    width: 120px;
+    height: 120px;
+    text-align: center;
 }
 </style>

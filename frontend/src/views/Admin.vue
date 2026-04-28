@@ -119,6 +119,7 @@
     </div>
 </template>
 <script setup>
+import router from '@/router';
 import request from '@/utils/request';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { reactive, toRaw, ref, inject } from 'vue';
@@ -185,6 +186,11 @@ const rules = {
 //---request统一异常处理---
 const RequestExceptionHandler=(res)=>{
     ElMessage.error(res.msg);
+    if (res.code === '501') {
+        setTimeout(()=>{
+            router.push('/manager');
+        },3000);
+    }
 }
 
 //---request操作---
@@ -397,5 +403,90 @@ const HadnleImportSuccess=(res)=>{
 }
 .Card{
     margin-bottom: 8px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.10);
+    padding: 24px 32px;
+    margin-bottom: 20px;
+    transition: box-shadow 0.2s;
+}
+.Card:hover {
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.18);
+}
+
+/* 统一按钮风格 */
+.el-button {
+    border-radius: 8px;
+    font-weight: 500;
+    letter-spacing: 1px;
+}
+
+/* 表格圆角 */
+.el-table {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.06);
+}
+
+/* 分页统一 */
+.el-pagination {
+    border-radius: 8px;
+    background: #f7faff;
+    padding: 8px 16px;
+    margin-top: 8px;
+}
+
+/* 弹窗风格 */
+.el-dialog {
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.18);
+}
+
+/* 表单输入统一 */
+.el-form-item {
+    margin-bottom: 18px;
+}
+.el-input, .el-select, .el-date-picker {
+    border-radius: 8px;
+}
+
+/* 必填项星号 */
+:deep(.required-label .el-form-item__label::before) {
+    content: '*';
+    color: #ff3b3b;
+    margin-right: 4px;
+}
+
+.Diolag_Input {
+    margin: 0 auto;
+    padding: 12px 0;
+}
+
+/* 头像上传统一 */
+.avatar-uploader .avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: block;
+    border: 2px solid #e6e6e6;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.10);
+}
+.avatar-uploader .el-upload {
+    border: 1px dashed var(--el-border-color);
+    border-radius: 8px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: var(--el-transition-duration-fast);
+}
+.avatar-uploader .el-upload:hover {
+    border-color: #409eff;
+}
+.el-icon.avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 80px;
+    height: 80px;
+    text-align: center;
 }
 </style>

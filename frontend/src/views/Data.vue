@@ -234,13 +234,26 @@ onMounted(()=>{
 
 </script>
 <style scoped>
-.echarts_box{
-    width: 600px;
-    height:400px;
-    margin-bottom: 12px;
-}
-.Card{
+/* 统一卡片风格 */
+.Card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.10);
+    padding: 24px 32px;
+    margin-bottom: 20px;
     min-width: 300px;
     min-height: 300px;
+    transition: box-shadow 0.2s;
+}
+.Card:hover {
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.18);
+}
+.echarts_box {
+    width: 600px;
+    height: 400px;
+    margin-bottom: 12px;
+    background: #f7faff;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.06);
 }
 </style>

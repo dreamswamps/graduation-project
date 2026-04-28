@@ -71,7 +71,7 @@
             <!-- default-active只是文字高亮≠选中该item -->
             <el-menu router :default-active="router.currentRoute.value.path" :default-openeds="['1']"
                 :collapse="toggle_arrow" style="height: 100%;">
-                <el-menu-item index="/manager/test">
+                <el-menu-item index="/manager">
                     <el-icon><HomeFilled /></el-icon>
                     <template #title>系统首页</template>
                 </el-menu-item>
@@ -85,11 +85,16 @@
                     <el-menu-item index="/manager/info">
                         <el-icon><User /></el-icon><span>个人资料</span>
                     </el-menu-item>
-                    <el-menu-item index="/manager/article">
+                    <!-- <el-menu-item index="/manager/article">
                         <el-icon><Reading /></el-icon><span>文章仓库</span>
+                    </el-menu-item> -->
+                    <el-menu-item index="/manager/unified-apply">
+                        <el-icon><FolderAdd /></el-icon>
+                        <span>申请大厅</span>
                     </el-menu-item>
-                    <el-menu-item>
-                        <el-icon><Setting /></el-icon><span>设置</span>
+                    <el-menu-item  v-if="data.user.role === '管理员'" index="/manager/approval-list">
+                        <el-icon><Edit /></el-icon>
+                        <span>审批申请</span>
                     </el-menu-item>
                 </el-sub-menu>
                 <el-menu-item index="/manager/data">
@@ -220,13 +225,15 @@ const CircleUrl = computed(()=>{
 const LogoUrl = '/logo.png';
 </script>
 <style scoped>
-.Top_Box{
+/* 统一顶部栏 */
+.Top_Box {
     height: 80px;
-    background-color: rgba(0, 208, 255, 0.5);
+    background: linear-gradient(90deg, #667eea 0%, #64b6ff 100%);
     display: flex;
     align-items: center;
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.10);
 }
-.Title{
+.Title {
     display: flex;
     align-items: center;
     width: 240px;
@@ -235,46 +242,48 @@ const LogoUrl = '/logo.png';
     font-weight: 500;
     margin-left: 24px;
 }
-.User_Image{
+.User_Image {
     display: flex;
     align-items: center;
     width: fit-content;
 }
-.Href_Box{
+.Href_Box {
     height: 48px;
     display: flex;
     align-items: center;
-    background-color: rgba(255, 255, 240, 0.5);
-    border-bottom: 1px solid rgba(125, 125, 125,0.4);
+    background: #f7faff;
+    border-bottom: 1px solid rgba(125, 125, 125,0.12);
+    border-radius: 0 0 12px 12px;
 }
-.PathDisplay{
+.PathDisplay {
     height: 100%;
     display: flex;
     align-items: center;
     padding: 0 12px;
-    font-size: 24px;
+    font-size: 20px;
     background: linear-gradient(to right, white, #c5ecff);
+    border-radius: 8px;
 }
-.FastPathItem{
+.FastPathItem {
     height: 100%;
     display: flex;
     align-items: center;
 }
-.FastPathItem:not(:last-child)::after{
+.FastPathItem:not(:last-child)::after {
     content: ">";
     margin: 0 8px;
-    color: black;
+    color: #888;
 }
-.FastPathItem .router-link-active{
+.FastPathItem .router-link-active {
     transition: transform 0.3s ease,color 0.3s ease;
     text-decoration: none;
-    color: black;
+    color: #333;
 }
-.FastPathItem .router-link-active:hover{
+.FastPathItem .router-link-active:hover {
     transform: scale(1.1);
     color: #409eff;
 }
-.ToggleArrow_Box{
+.ToggleArrow_Box {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -283,48 +292,55 @@ const LogoUrl = '/logo.png';
     border-right: 1px solid #dcdfe6;
     background-color: white;
     cursor: pointer;
+    border-radius: 8px 0 0 8px;
 }
-.Body_Box{
+.Body_Box {
     display: flex;
     min-height: calc(100vh - 80px);
 }
-.Nav_Box{
+.Nav_Box {
     width: 200px;
-    /* width: auto; */
-    border-right: 1px solid rgba(125, 125, 125,0.4);
+    border-right: 1px solid rgba(125, 125, 125,0.12);
     min-height: calc(100vh - 80px);
 }
-.el-menu:not(.el-menu--collapse){
+.el-menu:not(.el-menu--collapse) {
     width: 200px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.06);
 }
-.el-menu .el-menu-item,.el-menu .el-sub-menu{
-    border-bottom: 1px solid rgba(125, 125, 125,0.2);
+.el-menu .el-menu-item, .el-menu .el-sub-menu {
+    border-bottom: 1px solid rgba(125, 125, 125,0.08);
 }
-.el-menu .is-active{
+.el-menu .is-active {
     background: linear-gradient(to right, white, #c5ecff);
 }
-.Detail_Box{
+.Detail_Box {
     flex-grow: 1;
     width: 0;
-    background-color: rgba(255, 221, 0, 0.1);
-    padding: 12px;
+    background: #f7faff;
+    padding: 24px 16px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.06);
 }
 .ArrowTransform {
     transition: transform 0.4s ease, color 0.4s ease;
-    /* 以中心为基准放大 */
-    transform-origin: center;   
+    transform-origin: center;
     cursor: pointer;
 }
 .ArrowTransform.rorated {
     transform: rotate(90deg);
     color: #409eff;
 }
-/* 外层item悬停让icon响应放大 */
-.ArrowTransform:hover{
-    /* 放大1.2倍 */
+.ArrowTransform:hover {
     transform: scale(1.2);
 }
-.ArrowTransform:hover.rorated{
+.ArrowTransform:hover.rorated {
     transform: rotate(90deg) scale(1.2);
+}
+/* 统一按钮风格 */
+.el-button {
+    border-radius: 8px;
+    font-weight: 500;
+    letter-spacing: 1px;
 }
 </style>

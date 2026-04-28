@@ -65,20 +65,21 @@ public class AdminAuthService {
     public void Register(AdminAuth adminAuth) {
         String username = adminAuth.getUsername();
         AdminAuth db_adminAuth = adminAuthMapper.SelectByUsername(username);
-
+        Integer id = null;
         if (db_adminAuth != null) {
             if (db_adminAuth.getIs_deleted() == 1) {
                 // 复用已删除的账号
-                Integer id = db_adminAuth.getAdmin_id();
+                id = db_adminAuth.getAdmin_id();
                 adminAuthMapper.DeleteByAdminId(id);
-                CreateNewAdminAuth(id, adminAuth);
+//                CreateNewAdminAuth(id, adminAuth);
             } else {
                 throw new CustomException("500", "账号已存在");
             }
+        } else {
+            id = randomIntService.RandomID();
         }
 
         // 创建新账号
-        Integer id = randomIntService.RandomID();
         CreateNewAdminRecord(id, adminAuth); // 创建 admin 表记录
         CreateNewAdminAuth(id, adminAuth);
         return;

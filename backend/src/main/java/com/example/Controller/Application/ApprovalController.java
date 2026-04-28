@@ -1,20 +1,20 @@
-package com.example.Controller;
+package com.example.Controller.Application;
 
 import com.example.POJO.Application;
 import com.example.Service.AdminService;
-import com.example.Service.ApplyService;
+import com.example.Service.Application.ApprovalService;
 import com.example.Util.Result;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/apply")
-public class ApplyController {
+@RequestMapping("/approval")
+public class ApprovalController {
     /*
     该Controller主要用于管理员审批申请
      */
     @Resource
-    private ApplyService applyService;
+    private ApprovalService approvalService;
     @Resource
     private AdminService adminService;
 
@@ -26,10 +26,14 @@ public class ApplyController {
     @GetMapping("/pending")
     public Result pendingApplication(@RequestParam(required = false) String type,
                                      @RequestParam(required = false) String apply_account,
+                                     @RequestParam(required = false) Integer aid,
                                      @RequestParam(required = false, defaultValue = "false") boolean is_DESC,
+                                     @RequestParam(required = false, defaultValue = "0") int is_All,
+                                     @RequestParam(defaultValue = "1") int pageNum,
+                                     @RequestParam(defaultValue = "15") int pageSize,
                                      @RequestHeader("X-Current-User-ID") Integer currentUserId) {
         adminService.IDAuthManager(currentUserId);
-        return Result.success(applyService.pendingApplication(type, apply_account, is_DESC));
+        return Result.success(approvalService.pendingApplication(type, apply_account, aid, is_DESC, is_All, pageNum, pageSize));
     }
 
     /*
@@ -42,7 +46,7 @@ public class ApplyController {
     public Result lockApplication(@PathVariable Integer aid,
                                   @RequestHeader("X-Current-User-ID") Integer currentUserId) {
         adminService.IDAuthManager(currentUserId);
-        return Result.success(applyService.lockApplication(aid, currentUserId));
+        return Result.success(approvalService.lockApplication(aid, currentUserId));
     }
 
     /*
@@ -51,9 +55,10 @@ public class ApplyController {
      */
     @PutMapping("/unlock/{aid}")
     public Result unlockApplication(@PathVariable Integer aid,
-                                    @RequestHeader("X-Current-User-ID") Integer currentUserId) {
+                                    @RequestHeader("X-Current-User-ID") Integer currentUserId,
+                                    @RequestHeader("X-Lock-Token") String token) {
         adminService.IDAuthManager(currentUserId);
-        return Result.success(applyService.unlockApplication(aid));
+        return Result.success(approvalService.unlockApplication(aid, token, currentUserId));
     }
 
     /*
@@ -63,17 +68,17 @@ public class ApplyController {
         "aid":13,
         "approval":0,
         "type":"pwd-reset",
-        "reason":"纯属测试"(可选)
     }
     审批完毕后解锁working并设置完成时间
-    更新：为了支持策略模式的可拓展性和针对性，现在该接口被升级为需要提供type类型和原因reason
+    更新：为了支持策略模式的可拓展性和针对性，现在该接口被升级为需要提供type类型
          同时，考虑到需要的数据量增多，修改为使用body直接传递类
      */
     @PutMapping("/result")
     public Result resultApplication(@RequestBody Application application,
-                                    @RequestHeader("X-Current-User-ID") Integer currentUserId) {
+                                    @RequestHeader("X-Current-User-ID") Integer currentUserId,
+                                    @RequestHeader("X-Lock-Token") String token) {
         adminService.IDAuthManager(currentUserId);
-        return Result.success(applyService.resultApplication(application, currentUserId));
+        return approvalService.resultApplication(application, currentUserId, token);
     }
 
     /*
@@ -83,7 +88,7 @@ public class ApplyController {
     @PutMapping("/clear")
     public Result clearApplication(@RequestHeader("X-Current-User-ID") Integer currentUserId) {
         adminService.IDAuthManager(currentUserId);
-        applyService.clearApplication();
+        approvalService.clearApplication();
         return Result.success("清理完毕");
     }
 
@@ -96,8 +101,22 @@ public class ApplyController {
      */
     @GetMapping("/heartbeat/{aid}")
     public Result heartbeat(@PathVariable Integer aid,
-                            @RequestHeader("X-Current-User-ID") Integer currentUserId) {
+                            @RequestHeader("X-Current-User-ID") Integer currentUserId,
+                            @RequestHeader("X-Lock-Token") String token) {
         adminService.IDAuthManager(currentUserId);
-        return applyService.heartbeat(aid);
+        return approvalService.heartbeat(aid, token, currentUserId);
+    }
+
+    /*
+    短心跳检测
+    有别于上述的heartbeat接口只可能被调用一次
+    该接口会被反复调用
+    用于重置保存于Redis中指定数据的有效时间
+     */
+    @GetMapping("/heartbeat/revive/{aid}")
+    public Result heartbeatRevive(@PathVariable Integer aid,
+                                  @RequestHeader("X-Current-User-ID") Integer currentUserId,
+                                  @RequestHeader("X-Lock-Token") String token){
+        return approvalService.heartbeatRevive(aid, token, currentUserId);
     }
 }

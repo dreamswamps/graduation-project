@@ -32,8 +32,9 @@ public class UtilController {
     @PostMapping("/verifycaptcha")
     public Result verifyCaptcha(HttpServletRequest request,
                                 @RequestParam String code,
-                                @RequestParam String type) {
-        return utilService.verifyCaptcha(request, code, type);
+                                @RequestParam String type,
+                                @RequestParam(required = false, defaultValue = "false") boolean needKeep) {
+        return utilService.verifyCaptcha(request, code, type, needKeep);
     }
 
     /*
