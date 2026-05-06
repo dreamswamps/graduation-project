@@ -97,12 +97,12 @@ export function useApprovalTimer() {
                 }
                 console.log('短心跳出现异常');
             }
-        }, 2*60*1000);
+        }, 0.4*60*1000);
 
         // 15分钟的长心跳停止
         overTimeout.value = setTimeout(() => {
             handleOver();
-        }, 15*60*1000);
+        }, 3*60*1000);
     };
 
     // 暂停计时操作

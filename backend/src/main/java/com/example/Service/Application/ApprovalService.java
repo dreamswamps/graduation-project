@@ -66,13 +66,13 @@ public class ApprovalService {
                 String token = Jwts.builder()
                         .subject(aid.toString())
                         .claim("userId", currentUserId)
-                        .expiration(new Date(System.currentTimeMillis() + 15 * 60 * 1000))
+                        .expiration(new Date(System.currentTimeMillis() + 24 * 1000))
                         .signWith(Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8)))
                         .compact();
 //              Redis存储密钥
-//              该密钥持续时间5分钟，搭配2分钟的短心跳，允许在密钥的生效时间内，出现一次的复苏失败
+//              该密钥持续时间15分钟，搭配2分钟的短心跳，允许在密钥的生效时间内，出现一次的复苏失败
 //              由于订阅了Redis的expire，因此超时的密钥也会被传递，自动释放资源
-                stringRedisTemplate.opsForValue().set("lock:token:" + token, "", 15, TimeUnit.MINUTES);
+                stringRedisTemplate.opsForValue().set("lock:token:" + token, "", 3, TimeUnit.MINUTES);
                 return token;
             }
         } catch (Exception e) {
@@ -125,7 +125,7 @@ public class ApprovalService {
 
     public void clearApplication() {
         try {
-            LocalDateTime deadline = LocalDateTime.now().minusMinutes(15);
+            LocalDateTime deadline = LocalDateTime.now().minusMinutes(3);
             approvalMapper.clearApplication(deadline);
         }catch (Exception e) {
             throw new CustomException("500", e.getMessage());

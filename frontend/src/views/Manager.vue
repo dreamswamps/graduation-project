@@ -67,40 +67,41 @@
         </div>
     </div>
     <div class="Body_Box">
-        <div>
-            <!-- default-active只是文字高亮≠选中该item -->
-            <el-menu router :default-active="router.currentRoute.value.path" :default-openeds="['1']"
-                :collapse="toggle_arrow" style="height: 100%;">
-                <el-menu-item index="/manager">
-                    <el-icon><HomeFilled /></el-icon>
-                    <template #title>系统首页</template>
+        <div class="Menu_Container">
+            <el-menu
+                router
+                :default-active="router.currentRoute.value.path"
+                :default-openeds="['user-management']"
+                :collapse="toggle_arrow"
+                class="custom-menu">
+                <el-menu-item
+                    v-for="item in filteredMenuItems"
+                    :key="item.index"
+                    :index="item.index"
+                    v-show="!item.children"
+                    class="menu-item-custom">
+                    <el-icon><component :is="item.icon" /></el-icon>
+                    <template #title>{{ item.title }}</template>
                 </el-menu-item>
-                <el-sub-menu>
+
+                <el-sub-menu
+                    v-for="group in filteredMenuGroups"
+                    :key="group.index"
+                    :index="group.index"
+                    class="submenu-custom">
                     <template #title>
-                        <el-icon><UserFilled /></el-icon><span>用户管理</span>
+                        <el-icon><component :is="group.icon" /></el-icon>
+                        <span>{{ group.title }}</span>
                     </template>
-                    <el-menu-item v-if="data.user.role === '管理员'" index="/manager/admin">
-                        <el-icon><Collection /></el-icon><span>用户资料</span>
-                    </el-menu-item>
-                    <el-menu-item index="/manager/info">
-                        <el-icon><User /></el-icon><span>个人资料</span>
-                    </el-menu-item>
-                    <!-- <el-menu-item index="/manager/article">
-                        <el-icon><Reading /></el-icon><span>文章仓库</span>
-                    </el-menu-item> -->
-                    <el-menu-item index="/manager/unified-apply">
-                        <el-icon><FolderAdd /></el-icon>
-                        <span>申请大厅</span>
-                    </el-menu-item>
-                    <el-menu-item  v-if="data.user.role === '管理员'" index="/manager/approval-list">
-                        <el-icon><Edit /></el-icon>
-                        <span>审批申请</span>
+                    <el-menu-item
+                        v-for="child in group.children"
+                        :key="child.index"
+                        :index="child.index"
+                        class="submenu-item-custom">
+                        <el-icon><component :is="child.icon" /></el-icon>
+                        <span>{{ child.title }}</span>
                     </el-menu-item>
                 </el-sub-menu>
-                <el-menu-item index="/manager/data">
-                    <el-icon><Histogram /></el-icon>
-                    <template #title>数据详情</template>
-                </el-menu-item>
             </el-menu>
         </div>
         <div class="Detail_Box">
@@ -115,7 +116,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import { provide, reactive, onMounted, onUnmounted, computed, ref, watch } from 'vue';
 import { RouterView, useRoute } from 'vue-router';
 import Board from './Board.vue';
-import { Avatar, UserFilled } from '@element-plus/icons-vue'
+import { Avatar, UserFilled, HomeFilled, Collection, User, FolderAdd, Edit, Histogram, Tickets } from '@element-plus/icons-vue'
 import request from '@/utils/request';
 
 const token = localStorage.getItem('token')
@@ -126,9 +127,82 @@ const toggle_arrow = ref(false);
 
 let user_data = localStorage.getItem('current_user');
 
-const ToggleArrow=()=>{    
+const ToggleArrow=()=>{
     toggle_arrow.value = !toggle_arrow.value;
 }
+
+// 菜单配置
+const menuConfig = {
+    items: [
+        {
+            index: '/manager',
+            title: '系统首页',
+            icon: HomeFilled,
+            roles: ['管理员', '用户']
+        },
+        {
+            index: '/manager/data',
+            title: '数据详情',
+            icon: Histogram,
+            roles: ['管理员', '用户']
+        }
+    ],
+    groups: [
+        {
+            index: 'user-management',
+            title: '用户管理',
+            icon: UserFilled,
+            children: [
+                {
+                    index: '/manager/admin',
+                    title: '用户资料',
+                    icon: Collection,
+                    roles: ['管理员']
+                },
+                {
+                    index: '/manager/info',
+                    title: '个人资料',
+                    icon: User,
+                    roles: ['管理员', '用户']
+                },
+                {
+                    index: '/manager/unified-apply',
+                    title: '申请大厅',
+                    icon: FolderAdd,
+                    roles: ['管理员', '用户']
+                },
+                {
+                    index: '/manager/my-applications',
+                    title: '我的申请',
+                    icon: Tickets,
+                    roles: ['管理员', '用户']
+                },
+                {
+                    index: '/manager/approval-list',
+                    title: '审批申请',
+                    icon: Edit,
+                    roles: ['管理员']
+                }
+            ]
+        }
+    ]
+}
+
+// 根据角色过滤菜单项
+const filteredMenuItems = computed(() => {
+    return menuConfig.items.filter(item =>
+        item.roles.includes(data.user.role)
+    );
+});
+
+const filteredMenuGroups = computed(() => {
+    return menuConfig.groups.map(group => ({
+        ...group,
+        children: group.children.filter(child =>
+            child.roles.includes(data.user.role)
+        )
+    })).filter(group => group.children.length > 0);
+});
 
 const VerifyToken=()=>{
     request.post('/verifytoken',token).then(res=>{
@@ -296,31 +370,181 @@ const LogoUrl = '/logo.png';
 }
 .Body_Box {
     display: flex;
-    min-height: calc(100vh - 80px);
+    min-height: calc(100vh - 128px);
+    gap: 16px;
+    padding: 16px;
+    background: #f7faff;
 }
-.Nav_Box {
-    width: 200px;
-    border-right: 1px solid rgba(125, 125, 125,0.12);
-    min-height: calc(100vh - 80px);
+
+.Menu_Container {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.08);
+    overflow: hidden;
+    transition: all 0.3s ease;
 }
-.el-menu:not(.el-menu--collapse) {
-    width: 200px;
+
+.custom-menu {
+    border: none;
+    background: transparent;
+    height: 100%;
+}
+
+.custom-menu:not(.el-menu--collapse) {
+    width: 240px;
+}
+
+/* 菜单项通用样式 */
+.menu-item-custom,
+.submenu-item-custom {
+    margin: 8px 12px;
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.06);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: none !important;
+    position: relative;
+    overflow: hidden;
 }
-.el-menu .el-menu-item, .el-menu .el-sub-menu {
-    border-bottom: 1px solid rgba(125, 125, 125,0.08);
+
+.menu-item-custom::before,
+.submenu-item-custom::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 4px;
+    background: linear-gradient(180deg, #667eea 0%, #64b6ff 100%);
+    transform: scaleY(0);
+    transition: transform 0.3s ease;
 }
-.el-menu .is-active {
-    background: linear-gradient(to right, white, #c5ecff);
+
+.submenu-custom .el-sub-menu__title {
+    position: relative;
+}
+.submenu-custom .el-sub-menu__title::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 4px;
+    background: linear-gradient(180deg, #667eea 0%, #64b6ff 100%);
+    transform: scaleY(0);
+    transition: transform 0.3s ease;
+}
+.submenu-custom .el-sub-menu__title:hover::before {
+    transform: scaleY(1);
+}
+
+.menu-item-custom:hover,
+.submenu-item-custom:hover {
+    background: linear-gradient(135deg, #f0f4ff 0%, #e8f4ff 100%) !important;
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.12);
+}
+
+.menu-item-custom:hover::before,
+.submenu-item-custom:hover::before {
+    transform: scaleY(1);
+}
+
+/* 激活状态 */
+.custom-menu .is-active {
+    background: linear-gradient(135deg, #667eea15 0%, #64b6ff15 100%) !important;
+    color: #667eea !important;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
+}
+
+.custom-menu .is-active::before {
+    transform: scaleY(1);
+}
+
+.custom-menu .is-active .el-icon {
+    color: #667eea;
+    transform: scale(1.1);
+}
+
+/* 子菜单样式 */
+.submenu-custom {
+    margin: 8px 12px;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.submenu-custom .el-sub-menu__title {
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    margin: 0;
+    height: 56px;
+}
+
+.submenu-custom .el-sub-menu__title:hover {
+    background: linear-gradient(135deg, #f0f4ff 0%, #e8f4ff 100%) !important;
+    transform: translateX(4px);
+}
+
+.submenu-custom .el-menu {
+    background: #fafbff;
+    border-radius: 0 0 12px 12px;
+}
+
+/* 图标样式 */
+.custom-menu .el-icon {
+    font-size: 20px;
+    transition: all 0.3s ease;
+    color: #606266;
+}
+
+.custom-menu .menu-item-custom:hover .el-icon,
+.custom-menu .submenu-item-custom:hover .el-icon {
+    color: #667eea;
+    transform: scale(1.15);
+}
+
+/* 折叠状态优化 */
+.custom-menu.el-menu--collapse {
+    width: 64px;
+}
+
+.custom-menu.el-menu--collapse .menu-item-custom {
+    margin: 8px auto;
+    width: 48px;
+    display: flex;
+    justify-content: center;
+}
+.custom-menu.el-menu--collapse .submenu-custom {
+    margin: 8px auto;
+    width: 48px;
+}
+
+/* 折叠状态下子菜单标题的特殊处理 */
+.custom-menu.el-menu--collapse .submenu-custom .el-sub-menu__title {
+    width: 48px !important;
+    height: 48px !important;
+    padding: 0 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin: 0 !important;
+}
+
+.custom-menu.el-menu--collapse .submenu-custom .el-sub-menu__title .el-icon {
+    margin: 0 !important;
+}
+
+/* 折叠状态下禁用悬停位移效果 */
+.custom-menu.el-menu--collapse .menu-item-custom:hover,
+.custom-menu.el-menu--collapse .submenu-custom .el-sub-menu__title:hover {
+    transform: none !important;
 }
 .Detail_Box {
-    flex-grow: 1;
-    width: 0;
-    background: #f7faff;
-    padding: 24px 16px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.06);
+    flex: 1;
+    background: white;
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.08);
+    min-width: 0;
 }
 .ArrowTransform {
     transition: transform 0.4s ease, color 0.4s ease;

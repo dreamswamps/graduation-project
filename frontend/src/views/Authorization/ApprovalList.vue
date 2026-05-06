@@ -1,5 +1,9 @@
 <template>
     <div class="ApprovalList">
+        <div class="page-header">
+            <h2 class="page-title">审批列表</h2>
+        </div>
+
         <ApprovalSearchTemplate
             ref="approvalSearchRef"
             :search-data="data.searchData"
@@ -43,12 +47,12 @@
                 </el-divider>
             </template>
         </ApprovalDialogTemplate>
-        
-        <div class="pagination-wrapper">
+
+        <div class="pagination-box">
             <el-pagination
                 @size-change="GetApplicationList()"
                 @current-change="GetApplicationList()"
-                layout="total, sizes, prev, pager, next, jumper" 
+                layout="total, sizes, prev, pager, next, jumper"
                 background
                 v-model:current-page="data.pageNum"
                 v-model:page-size="data.pageSize"
@@ -493,22 +497,64 @@ const handleBeforeRemoveFile=async (file, fileList, resolve)=>{
 */
 </script>
 <style scoped>
-.ApprovalList{
-    background-color: white;
-    padding: 12px 0;
+.ApprovalList {
+    padding: 24px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf4 100%);
+    min-height: 100vh;
+    animation: fadeIn 0.5s ease-in;
 }
 
-.pagination-wrapper{
-    margin: 12px;
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.page-header {
+    margin-bottom: 28px;
+    text-align: center;
+}
+
+.page-title {
+    font-size: 32px;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.page-subtitle {
+    font-size: 14px;
+    color: #7f8c8d;
+    margin: 0;
+}
+
+.pagination-box {
     display: flex;
     justify-content: flex-end;
+    margin-top: 8px;
+    padding: 0 4px;
 }
+
+/* 按钮统一 */
+.el-button {
+    border-radius: 8px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.el-button:hover { transform: translateY(-2px); }
+.el-button:active { transform: translateY(0); }
+
+/* divider 样式 */
 .custom-divider.create-template-divider {
     margin: 30px 0 20px;
 }
 
 .custom-divider.create-template-divider :deep(.el-divider__text) {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, #667eea, #764ba2) !important;
     color: white;
     padding: 8px 24px;
     border-radius: 30px;
@@ -516,5 +562,15 @@ const handleBeforeRemoveFile=async (file, fileList, resolve)=>{
     font-weight: 500;
     letter-spacing: 1px;
     box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+/* 修复子组件中 divider 的背景色 */
+:deep(.el-divider__text) {
+    background-color: transparent !important;
+}
+
+/* 仅对 create-template-divider 保留渐变背景 */
+.custom-divider.create-template-divider :deep(.el-divider__text) {
+    background: linear-gradient(135deg, #667eea, #764ba2) !important;
 }
 </style>

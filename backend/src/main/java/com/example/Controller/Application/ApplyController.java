@@ -42,7 +42,8 @@ public class ApplyController {
      */
     @GetMapping("/check")
     public Result checkApplication(@RequestParam String apply_account,
-                                   @RequestParam(required = false) String type) {
-        return Result.success(applyService.checkApplication(apply_account, type));
+                                   @RequestParam(required = false) String type,
+                                   @RequestParam(required = false) boolean isID) {
+        return Result.success(applyService.checkApplication(apply_account, type, isID));
     }
 }

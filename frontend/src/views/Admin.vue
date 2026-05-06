@@ -1,71 +1,99 @@
 <template>
-    <div>
-        <div class="Card">
-            <el-input style="width: 240px;margin-right: 8px;" prefix-icon="Search" v-model="data.name" placeholder="What's your name?"/>
-            <el-button type="primary" @click="Load">查 询</el-button>
-            <el-button type="warning" @click="Reset">重 置</el-button>
+    <div class="admin-container">
+        <div class="page-header">
+            <h2 class="page-title">用户管理</h2>
         </div>
-        <div class="Card">
-            <el-button type="primary" @click="HandleAddDialog">新 增</el-button>
-            <el-button type="warning" @click="DeleteBatch">批量删除</el-button>
-            <el-upload
-                style="display: inline-block; margin: 0px 10px;"
-                :action="baseURL + '/files/import'"
-                :show-file-list="false"
-                :on-success="HadnleImportSuccess"
-                >
-                <el-button type="primary">导 入</el-button>
-            </el-upload>
-            <el-button type="success" @click="ExportData">导 出</el-button>
-            <el-button 
-                v-if="data.delete_ids.length > 0" 
-                type="success" 
-                @click="UndoDelete"
-                icon="RefreshLeft">
-                撤回全部({{ data.delete_ids.length }})
-            </el-button>
+
+        <!-- 搜索栏 -->
+        <div class="Card search-card">
+            <el-input class="search-input" prefix-icon="Search" v-model="data.name" placeholder="搜索用户名称..." clearable />
+            <div class="search-actions">
+                <el-button type="primary" icon="Search" @click="Load">查 询</el-button>
+                <el-button type="warning" icon="Refresh" @click="Reset">重 置</el-button>
+            </div>
         </div>
-        <div class="Card">
-            <el-table :data="data.admin_list" style="width: 100%" @selection-change="handleSelectionChange">
+
+        <!-- 操作栏 -->
+        <div class="Card toolbar-card">
+            <div class="toolbar-left">
+                <el-button type="primary" icon="Plus" @click="HandleAddDialog">新 增</el-button>
+                <el-button type="danger" icon="Delete" @click="DeleteBatch">批量删除</el-button>
+                <el-upload
+                    style="display: inline-block;"
+                    :action="baseURL + '/files/import'"
+                    :show-file-list="false"
+                    :on-success="HadnleImportSuccess">
+                    <el-button type="info" icon="Upload">导 入</el-button>
+                </el-upload>
+                <el-button type="success" icon="Download" @click="ExportData">导 出</el-button>
+            </div>
+            <transition name="fade">
+                <el-button
+                    v-if="data.delete_ids.length > 0"
+                    type="warning"
+                    icon="RefreshLeft"
+                    @click="UndoDelete">
+                    撤回全部 ({{ data.delete_ids.length }})
+                </el-button>
+            </transition>
+        </div>
+
+        <!-- 表格 -->
+        <div class="Card table-card">
+            <el-table :data="data.admin_list" style="width: 100%" @selection-change="handleSelectionChange" stripe>
                 <el-table-column type="selection" width="55" />
-                <el-table-column prop="id" label="编号" />
-                <el-table-column label="头像">
+                <el-table-column prop="id" label="编号" width="80" />
+                <el-table-column label="头像" width="80">
                     <template #default="scope">
-                        <img v-if="scope.row.avatar" :src="scope.row.avatar" style="display: block; width: 40px; height: 40px; border-radius: 50%; border: 1px solid black;">
-                        <div v-else style="display: block; width: 40px; height: 40px; border-radius: 50%; border: 1px solid black;"></div>
+                        <img v-if="scope.row.avatar" :src="scope.row.avatar" class="avatar-img">
+                        <div v-else class="avatar-placeholder">
+                            <el-icon><User /></el-icon>
+                        </div>
                     </template>
                 </el-table-column>
                 <el-table-column prop="name" label="名称" />
                 <el-table-column prop="username" label="账号" />
-                <el-table-column prop="role" label="身份" />
-                <el-table-column label="加入时间">
+                <el-table-column prop="role" label="身份">
                     <template #default="scope">
-                        {{ (scope.row.addtime)?scope.row.addtime:'未知' }}
+                        <el-tag :type="scope.row.role === 'ADMIN' ? 'danger' : 'primary'" size="small">
+                            {{ scope.row.role }}
+                        </el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column prop="gender" label="性别" />
+                <el-table-column label="加入时间">
+                    <template #default="scope">
+                        <span class="time-text">{{ scope.row.addtime || '未知' }}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="gender" label="性别" width="70">
+                    <template #default="scope">
+                        <el-tag :type="scope.row.gender === '男' ? 'primary' : 'danger'" size="small" effect="plain">
+                            {{ scope.row.gender }}
+                        </el-tag>
+                    </template>
+                </el-table-column>
                 <el-table-column label="电话">
                     <template #default="scope">
-                        {{ (scope.row.phone)?scope.row.phone:'未知' }}
+                        {{ scope.row.phone || '未知' }}
                     </template>
                 </el-table-column>
                 <el-table-column label="邮箱">
                     <template #default="scope">
-                        {{ (scope.row.email)?scope.row.email:'未知' }}
+                        {{ scope.row.email || '未知' }}
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" width="120">
+                <el-table-column label="操作" width="120" fixed="right">
                     <template #default="scope">
-                        <el-button @click="HandleUpdateDialog(scope.row)" type="primary" icon="Edit" circle/>
-                        <el-button @click="Delete(scope.row.id)" type="danger" icon="Delete" circle/>
+                        <el-button @click="HandleUpdateDialog(scope.row)" type="primary" icon="Edit" circle />
+                        <el-button @click="Delete(scope.row.id)" type="danger" icon="Delete" circle />
                     </template>
                 </el-table-column>
             </el-table>
-            <div style="margin-top: 12px;">
-                <el-pagination 
+            <div class="pagination-box">
+                <el-pagination
                     @size-change="Load()"
                     @current-change="Load()"
-                    layout="total, sizes, prev, pager, next, jumper" 
+                    layout="total, sizes, prev, pager, next, jumper"
                     background
                     v-model:current-page="data.pageNum"
                     v-model:page-size="data.pageSize"
@@ -74,29 +102,22 @@
             </div>
         </div>
 
-        <el-dialog v-model="data.dialog_form_visible" title="用户信息" width="500">
-            <el-form ref="formRef" :rules="rules" :model="data.form" label-width="80px" class="Diolag_Input">
-                <el-form-item label="编号" prop="id" required >
-                    <el-input v-model="data.form.id" autocomplete="off" placeholder="请输入数字编号" 
-                    :disabled="data.isEditMode"/>
+        <!-- 弹窗 -->
+        <el-dialog v-model="data.dialog_form_visible" title="用户信息" width="500" class="user-dialog">
+            <el-form ref="formRef" :rules="rules" :model="data.form" label-width="80px" class="dialog-form">
+                <el-form-item label="编号" prop="id" required>
+                    <el-input v-model="data.form.id" autocomplete="off" placeholder="请输入数字编号" :disabled="data.isEditMode" />
                 </el-form-item>
                 <el-form-item label="头像">
-                    <el-upload
-                        :action="baseURL+'/files/upload'"
-                        list-type="picture"
-                        :on-success="handleAvatarSuccess">
-                        <el-button type="primary">上传头像</el-button>
+                    <el-upload :action="baseURL+'/files/upload'" list-type="picture" :on-success="handleAvatarSuccess">
+                        <el-button type="primary" icon="Upload">上传头像</el-button>
                     </el-upload>
                 </el-form-item>
                 <el-form-item label="名称" prop="name" required>
-                    <el-input v-model="data.form.name" autocomplete="off" placeholder="请输入名称"/>
+                    <el-input v-model="data.form.name" autocomplete="off" placeholder="请输入名称" />
                 </el-form-item>
                 <el-form-item label="加入时间">
-                    <el-date-picker
-                        v-model="data.form.addtime"
-                        type="date"
-                        placeholder="请选择日期"
-                        format="YYYY/MM/DD"/>
+                    <el-date-picker v-model="data.form.addtime" type="date" placeholder="请选择日期" format="YYYY/MM/DD" style="width: 100%;" />
                 </el-form-item>
                 <el-form-item label="性别" prop="gender" required>
                     <el-radio-group v-model="data.form.gender">
@@ -105,15 +126,15 @@
                     </el-radio-group>
                 </el-form-item>
                 <el-form-item label="电话" prop="phone">
-                    <el-input v-model="data.form.phone" autocomplete="off" placeholder="请输入电话号码"/>
+                    <el-input v-model="data.form.phone" autocomplete="off" placeholder="请输入电话号码" />
                 </el-form-item>
             </el-form>
             <template #footer>
-            <div class="dialog-footer">
-                <el-button type="danger" @click="Cancel">取消</el-button>
-                <el-button type="primary" @click="Save" v-if="!data.isEditMode">保存</el-button>
-                <el-button type="success" @click="Submit">确认</el-button>
-            </div>
+                <div class="dialog-footer">
+                    <el-button type="danger" @click="Cancel">取消</el-button>
+                    <el-button type="primary" @click="Save" v-if="!data.isEditMode">保存</el-button>
+                    <el-button type="success" @click="Submit">确认</el-button>
+                </div>
             </template>
         </el-dialog>
     </div>
@@ -392,101 +413,150 @@ const HadnleImportSuccess=(res)=>{
 }
 </script>
 <style scoped>
-:deep(.required-label .el-form-item__label::before) {
-    content: '*';
-    color: #ff3b3b;
-    margin-right: 4px;
-}
-.Diolag_Input{
-    padding-right: 40px;
-    margin-top: 12px;
-}
-.Card{
-    margin-bottom: 8px;
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.10);
-    padding: 24px 32px;
-    margin-bottom: 20px;
-    transition: box-shadow 0.2s;
-}
-.Card:hover {
-    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.18);
+.admin-container {
+    padding: 24px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf4 100%);
+    min-height: 100vh;
+    animation: fadeIn 0.5s ease-in;
 }
 
-/* 统一按钮风格 */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.page-header {
+    margin-bottom: 28px;
+    text-align: center;
+}
+
+.page-title {
+    font-size: 32px;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.page-subtitle {
+    font-size: 14px;
+    color: #7f8c8d;
+    margin: 0;
+}
+
+.Card {
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.12);
+    padding: 20px 28px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(102, 126, 234, 0.08);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.Card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.Card:hover::before { opacity: 1; }
+
+.Card:hover {
+    box-shadow: 0 12px 40px rgba(102, 126, 234, 0.18);
+    transform: translateY(-2px);
+}
+
+/* 搜索栏 */
+.search-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.search-input { width: 280px; }
+
+.search-actions { display: flex; gap: 10px; }
+
+/* 操作栏 */
+.toolbar-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.toolbar-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+/* 撤回按钮动画 */
+.fade-enter-active, .fade-leave-active { transition: all 0.3s ease; }
+.fade-enter-from, .fade-leave-to { opacity: 0; transform: translateX(10px); }
+
+/* 头像 */
+.avatar-img {
+    display: block;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid rgba(102, 126, 234, 0.3);
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.avatar-img:hover { transform: scale(1.1); }
+
+.avatar-placeholder {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #e8ecf4 0%, #d0d8f0 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #95a5a6;
+    font-size: 18px;
+}
+
+.time-text { color: #7f8c8d; font-size: 13px; }
+
+/* 分页 */
+.pagination-box {
+    margin-top: 16px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* 弹窗表单 */
+.dialog-form {
+    padding: 12px 20px 0;
+}
+
+.dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+/* 按钮统一 */
 .el-button {
     border-radius: 8px;
     font-weight: 500;
     letter-spacing: 1px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* 表格圆角 */
-.el-table {
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.06);
-}
+.el-button:hover { transform: translateY(-2px); }
+.el-button:active { transform: translateY(0); }
 
-/* 分页统一 */
-.el-pagination {
-    border-radius: 8px;
-    background: #f7faff;
-    padding: 8px 16px;
-    margin-top: 8px;
-}
-
-/* 弹窗风格 */
-.el-dialog {
-    border-radius: 16px;
-    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.18);
-}
-
-/* 表单输入统一 */
-.el-form-item {
-    margin-bottom: 18px;
-}
-.el-input, .el-select, .el-date-picker {
-    border-radius: 8px;
-}
-
-/* 必填项星号 */
-:deep(.required-label .el-form-item__label::before) {
-    content: '*';
-    color: #ff3b3b;
-    margin-right: 4px;
-}
-
-.Diolag_Input {
-    margin: 0 auto;
-    padding: 12px 0;
-}
-
-/* 头像上传统一 */
-.avatar-uploader .avatar {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    display: block;
-    border: 2px solid #e6e6e6;
-    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.10);
-}
-.avatar-uploader .el-upload {
-    border: 1px dashed var(--el-border-color);
-    border-radius: 8px;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    transition: var(--el-transition-duration-fast);
-}
-.avatar-uploader .el-upload:hover {
-    border-color: #409eff;
-}
-.el-icon.avatar-uploader-icon {
-    font-size: 28px;
-    color: #8c939d;
-    width: 80px;
-    height: 80px;
-    text-align: center;
-}
+.el-button.is-circle:hover { transform: translateY(-2px) scale(1.05); }
 </style>

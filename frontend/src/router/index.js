@@ -32,6 +32,11 @@ const router = createRouter({
           component: () => import('../views/Authorization/ApprovalList.vue')
         },
         {
+          path: 'my-applications',
+          name: '我的申请',
+          component: () => import('../views/Authorization/MyApplications.vue')
+        },
+        {
           path: 'info',
           name: '个人资料',
           component: () => import('../views/UserInfo.vue'),

@@ -76,7 +76,11 @@ public class ApplyService {
     }
 
 //    根据提供的账号，查看该账号的申请(type非必选)
-    public List<Application> checkApplication(String apply_account, String type) {
+    public List<Application> checkApplication(String apply_account, String type, boolean isID) {
+        if (isID) {
+            AdminAuth adminAuth = adminAuthMapper.SelectByAdminId(Integer.valueOf(apply_account));
+            apply_account = adminAuth.getUsername();
+        }
         List<Application> applications = applyMapper.checkApplication(apply_account, type);
         if (!applications.isEmpty()){
             return applications;

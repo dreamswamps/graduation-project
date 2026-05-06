@@ -5,8 +5,8 @@
 <mapper namespace="com.example.Mapper.Application.UnifiedApplyRenderMapper">
 
     <select id="renderTypeList" resultType="java.lang.String">
-        SELECT DISTINCT type, tid FROM unified_apply_template
-        ORDER BY tid
+        SELECT DISTINCT type FROM unified_apply_template
+        ORDER BY type
     </select>
 
     <select id="getRenderDialogData" resultType="java.lang.String">

@@ -12,7 +12,8 @@ export const formatMap = {
     'user_email': '用户邮箱',
     'templateName': '模板简称',
     'templateDesc': '模板信息',
-    'tid': '模板编号'
+    'tid': '模板编号',
+    'approval': '审批状态',
 }
 
 /*
@@ -106,6 +107,13 @@ export const workingStatusMap = {
     100: { text: '已完成', type: 'success' },
     0: { text: '待处理', type: 'info' },
     1: { text: '处理中', type: 'warning' }
+}
+
+// 我的申请状态映射
+export const approvalStatusTextMap = {
+    0: '待审批',
+    1: '已通过',
+    2: '未通过'
 }
 
 // 审批类型标签样式映射

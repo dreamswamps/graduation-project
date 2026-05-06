@@ -1,6 +1,10 @@
 <template>
-    <div class="Box">
-        <div class="Card" style="width: 80%; max-width: 720px; display: flex; justify-content: center;">
+    <div class="board-container">
+        <div class="page-header">
+            <h2 class="page-title">待办清单</h2>
+        </div>
+
+        <div class="Card main-card">
             <div class="TodoListBox">
                 <el-button type="primary" class="DrawerButton" @click="drawer_form_visable = true">
                     添加新的待办事务
@@ -366,68 +370,224 @@ const SaveDrag = () => {
 }
 </script>
 <style scoped>
-.Box {
-    padding-top: 32px;
-    width: 100%;
-    display: flex;
-    justify-content: center;
+/* 页面容器 */
+.board-container {
+    padding: 24px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf4 100%);
+    min-height: 100vh;
+    animation: fadeIn 0.5s ease-in;
 }
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 页面标题区域 */
+.page-header {
+    margin-bottom: 32px;
+    text-align: center;
+    animation: slideDown 0.6s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.page-title {
+    font-size: 32px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0 0 8px 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.page-subtitle {
+    font-size: 14px;
+    color: #7f8c8d;
+    margin: 0;
+}
+
+/* 主卡片容器 */
+.main-card {
+    max-width: 800px;
+    margin: 0 auto;
+    animation: slideUp 0.7s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 待办列表容器 */
 .TodoListBox {
-    padding: 16px;
-    width: 85%;
-}
-.DrawerButton {
-    padding: 16px;
+    padding: 24px;
     width: 100%;
-    font-size: 15px;
-    letter-spacing: 2px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-.DrawerButton:hover {
+
+/* 统一卡片风格 */
+.Card {
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.12);
+    padding: 32px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(102, 126, 234, 0.08);
+    position: relative;
+    overflow: hidden;
+}
+
+.Card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.Card:hover::before {
+    opacity: 1;
+}
+
+.Card:hover {
+    box-shadow: 0 12px 40px rgba(102, 126, 234, 0.20);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-color: rgba(102, 126, 234, 0.15);
 }
+
+/* 抽屉按钮 */
+/* 抽屉按钮 */
+.DrawerButton {
+    padding: 18px;
+    width: 100%;
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    border-radius: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+}
+
+.DrawerButton:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.25);
+}
+
+.DrawerButton:active {
+    transform: translateY(-1px);
+}
+
 .SaveButton {
-    margin-top: 14px;
-}
-.Collapse_Box {
     margin-top: 20px;
-    border: 1px solid rgba(0, 0, 0, 0.12);
-    border-radius: 8px;
-    padding: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    background-color: rgba(0, 0, 0, 0.04);
 }
+
+/* 折叠面板容器 */
+.Collapse_Box {
+    margin-top: 24px;
+    border: 1px solid rgba(102, 126, 234, 0.12);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 2px 12px rgba(102, 126, 234, 0.08);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(247, 250, 255, 0.9) 100%);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.Collapse_Box:hover {
+    border-color: rgba(102, 126, 234, 0.2);
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.12);
+}
+
+/* 空状态图片 */
 .Empty_Img {
     box-sizing: border-box;
     width: 100%;
-    padding: 16px;
-    opacity: 0.7;
+    padding: 32px;
+    opacity: 0.6;
+    filter: grayscale(20%);
+    transition: all 0.3s ease;
 }
+
+.Empty_Img:hover {
+    opacity: 0.8;
+    transform: scale(1.02);
+}
+
+/* 文本删除线 */
 .Text_ThroughLine {
     text-decoration: line-through;
     opacity: 0.5;
+    transition: opacity 0.3s ease;
 }
+
 .Title_Text {
     flex: 1;
     width: 1px;
+    font-weight: 500;
 }
+
 .Title_Icons {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
 }
+
 .Heart_Icon {
-    width: 15px;
+    width: 16px;
+    animation: heartBeat 0.5s ease;
 }
+
+@keyframes heartBeat {
+    0%, 100% { transform: scale(1); }
+    25% { transform: scale(1.2); }
+    50% { transform: scale(1); }
+}
+
+/* 折叠项 */
 .Collapse_Item_Line {
-    border-radius: 6px;
+    border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.12);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: white;
 }
+
+.Collapse_Item_Line:hover {
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.18);
+    transform: translateY(-2px);
+}
+
 .Collapse_Item_Line:not(:last-child) {
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 }
+/* 折叠标题 */
 .Collapse_Title {
     display: flex;
     align-items: center;
@@ -435,22 +595,33 @@ const SaveDrag = () => {
     position: relative;
     transition: all 0.3s ease;
     overflow: hidden;
-    color: #1a1a1a;
+    color: #2c3e50;
     text-indent: 0.5em;
     width: 100%;
+    padding: 4px 0;
+    min-height: 40px;
+    line-height: 1.5;
 }
+
 .Collapse_Title > * {
     position: relative;
     z-index: 1;
+    display: flex;
+    align-items: center;
 }
+
 .Collapse_Icon {
-    margin-right: 14px;
-    color: #444;
-    transition: transform 0.3s ease;
+    margin-right: 16px;
+    color: #667eea;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 16px;
 }
+
 .Collapse_Title.Is_Active .Collapse_Icon {
     transform: rotate(90deg);
+    color: #764ba2;
 }
+
 .Collapse_Title::before {
     content: '';
     position: absolute;
@@ -458,155 +629,303 @@ const SaveDrag = () => {
     left: -100%;
     width: 100%;
     height: 100%;
-    transition: left 0.3s ease;
+    transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 0;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    will-change: left;
 }
+
 .Collapse_Title[tag-like="0"]::before {
     background: linear-gradient(to right, #ffffff, #d6f0ff);
 }
+
 .Collapse_Title[tag-like="1"]::before {
     background: linear-gradient(to right, #ffffff, #ffd0cc);
 }
+
 .Collapse_Title.Is_Active::before {
     left: 0;
 }
+/* 折叠内容容器 */
 .Collapse_Container {
-    padding: 14px 16px;
-    border-radius: 0 0 6px 6px;
+    padding: 20px;
+    border-radius: 0 0 10px 10px;
 }
+
 .Collapse_Container[tag-like="0"] {
     background: linear-gradient(220.55deg, #7CF7FF 0%, #4B73FF 100%);
 }
+
 .Collapse_Container[tag-like="1"] {
     background: linear-gradient(220.55deg, #FF3F3F 0%, #063CFF 100%);
 }
-.Content_Box {
-    border-radius: 6px;
-    background: linear-gradient(220.55deg, #FFF6EB 0%, #e8ddd5 100%);
-    padding: 8px 12px;
-    text-indent: 2em;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
-    word-wrap: break-word;
-    line-height: 1.6;
-    font-size: 14px;
-    color: #333;
-    min-height: 36px;
+
+.Collapse_Container > * {
+    position: relative;
+    z-index: 1;
 }
+
+/* 内容框 */
+.Content_Box {
+    border-radius: 10px;
+    background: linear-gradient(220.55deg, #FFF6EB 0%, #e8ddd5 100%);
+    padding: 16px 20px;
+    text-indent: 2em;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    word-wrap: break-word;
+    line-height: 1.8;
+    font-size: 14px;
+    color: #2c3e50;
+    min-height: 48px;
+    transition: all 0.3s ease;
+}
+
+.Content_Box:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    transform: translateY(-1px);
+}
+/* 时间显示 */
 .Time_Box {
-    margin-top: 12px;
+    margin-top: 16px;
     display: flex;
-    gap: 16px;
+    gap: 12px;
     justify-content: center;
     flex-wrap: wrap;
 }
+
 .Time_Item {
     display: flex;
     align-items: center;
-    gap: 5px;
-    color: rgba(255, 255, 255, 0.92);
+    gap: 6px;
+    color: rgba(255, 255, 255, 0.95);
     font-size: 13px;
-    background: rgba(0, 0, 0, 0.15);
-    padding: 4px 10px;
-    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    padding: 8px 16px;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
 }
+
+.Time_Item:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
 .Time_Item .el-icon {
-    color: #F7BA2A;
-    font-size: 13px;
+    color: #ffd700;
+    font-size: 14px;
 }
+
 .Time_Label {
     font-weight: 600;
-    opacity: 0.85;
+    opacity: 0.9;
 }
+
 .Time_Value {
     font-weight: 400;
 }
+
+/* 评分显示 */
 .Rate_Box {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: 10px;
+    margin-top: 14px;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
 }
+
+/* 操作按钮组 */
 .Operation_Box {
-    margin-top: 12px;
+    margin-top: 16px;
     display: flex;
     justify-content: flex-end;
-    gap: 10px;
+    gap: 12px;
+    flex-wrap: wrap;
 }
+/* 拖拽手柄 */
 .Handler {
     cursor: grab;
     user-select: none;
-    padding: 0 6px;
-    color: #888;
-    transition: color 0.2s;
+    padding: 0 8px;
+    color: #95a5a6;
+    transition: all 0.3s ease;
+    border-radius: 4px;
 }
+
 .Handler:hover {
-    color: #333;
+    color: #667eea;
+    background: rgba(102, 126, 234, 0.1);
 }
+
 .Handler:active {
     cursor: grabbing;
+    color: #764ba2;
 }
+
+/* 抽屉样式 */
 .Drawer_Header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 40px;
+    height: 48px;
+    padding: 0 8px;
 }
+
 .Drawer_Title {
-    font-size: 20px;
+    font-size: 22px;
     color: white;
     margin: 0;
     font-weight: 600;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
+
 .Drawer_Close_Btn {
     font-size: 15px;
+    font-weight: 500;
+    transition: all 0.3s ease;
 }
+
+.Drawer_Close_Btn:hover {
+    transform: scale(1.05);
+}
+
 .Drawer_Body {
     display: flex;
     justify-content: center;
     height: 100%;
     overflow-y: hidden;
-}
-.Drawer_Form_Card {
-    width: 60%;
-    height: 100%;
-    max-width: 600px;
-    overflow-y: auto;
     padding: 20px;
 }
+
+.Drawer_Form_Card {
+    width: 90%;
+    height: 100%;
+    max-width: 680px;
+    overflow-y: auto;
+    padding: 32px;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+/* 表单行 */
 .Date_Row {
     display: flex;
     align-items: center;
+    gap: 8px;
 }
+
 .Help_Icon {
-    color: #409eff;
+    color: #667eea;
     margin-left: 8px;
     font-size: 18px;
     cursor: help;
+    transition: all 0.3s ease;
 }
+
+.Help_Icon:hover {
+    color: #764ba2;
+    transform: scale(1.1);
+}
+
+/* 抽屉底部 */
 .Drawer_Footer {
     flex: auto;
-    margin-top: 12px;
+    margin-top: 16px;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
 }
+
 .Footer_Btn {
     font-size: 15px;
     letter-spacing: 2px;
+    padding: 12px 28px;
+    border-radius: 10px;
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+.Footer_Btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.Footer_Btn:active {
+    transform: translateY(0);
+}
+
 .el-form-item {
-    margin-bottom: 22px;
+    margin-bottom: 24px;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .board-container {
+        padding: 16px;
+    }
+
+    .page-title {
+        font-size: 24px;
+    }
+
+    .main-card {
+        padding: 20px;
+    }
+
+    .TodoListBox {
+        padding: 16px;
+    }
+
+    .Drawer_Form_Card {
+        width: 95%;
+        padding: 20px;
+    }
+
+    .Footer_Btn {
+        flex: 1;
+        min-width: 120px;
+    }
 }
 </style>
 <style>
 .Todo_Drawer {
     background: linear-gradient(135deg, #292a3a, #536976) !important;
 }
+
+.Todo_Drawer .el-drawer__body {
+    padding: 0;
+}
+
 #Collapse .el-collapse-item__arrow {
     display: none;
 }
+
 #Collapse .el-collapse-item__content {
     padding-bottom: 0;
 }
+
 .Collapse_Box .el-collapse-icon-position-right .el-collapse-item__header {
     padding-right: 0;
+    padding-left: 8px;
+}
+
+/* 优化 Element Plus 组件样式 */
+.el-button.is-circle {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.el-button.is-circle:hover {
+    transform: translateY(-2px) scale(1.05);
+}
+
+.el-button.is-circle:active {
+    transform: translateY(0) scale(1);
 }
 </style>

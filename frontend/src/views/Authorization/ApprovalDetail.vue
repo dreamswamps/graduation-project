@@ -1,89 +1,81 @@
 <template>
   <div class="ApprovalDetail">
+    <!-- 页面头部 -->
     <div class="page-header">
-      <el-button @click="handleBack" icon="ArrowLeft" circle class="back-btn"></el-button>
-      <h2 class="page-title">审批详情</h2>
+      <el-button @click="handleBack" icon="ArrowLeft" circle class="back-btn" />
+      <div class="header-content">
+        <h2 class="page-title">审批详情</h2>
+      </div>
+      <el-tag v-if="rowData.aid" :type="getStatusTagType(rowData.approval)" size="large" class="status-badge">
+        {{ getApprovalStatusText(rowData.approval) }}
+      </el-tag>
     </div>
 
-    <!-- 基础信息卡片 -->
-    <el-card class="detail-card" shadow="hover">
-      <template #header>
-        <div class="card-header">
-          <span class="card-title">基础信息</span>
+    <template v-if="rowData.aid">
+      <!-- 基础信息卡片 -->
+      <div class="Card">
+        <div class="card-section-title">
+          <el-icon class="section-icon"><Document /></el-icon>
+          基础信息
         </div>
-      </template>
+        <el-descriptions border :column="3">
+          <el-descriptions-item label="审批单号">
+            <span class="mono-text">{{ rowData.aid }}</span>
+          </el-descriptions-item>
+          <el-descriptions-item label="审批类型">
+            <el-tag :type="getTypeTagType(rowData.type)" size="small">
+              {{ getApprovalTypeText(rowData.type) }}
+            </el-tag>
+          </el-descriptions-item>
+          <el-descriptions-item label="审批状态">
+            <el-tag :type="getStatusTagType(rowData.approval)" size="small">
+              {{ getApprovalStatusText(rowData.approval) }}
+            </el-tag>
+          </el-descriptions-item>
+          <el-descriptions-item label="申请人">{{ rowData.user_name ?? '-' }}</el-descriptions-item>
+          <el-descriptions-item label="申请账号">
+            <span class="mono-text">{{ rowData.apply_account ?? '-' }}</span>
+          </el-descriptions-item>
+          <el-descriptions-item label="申请时间">
+            <span class="time-text">{{ rowData.apply_time || '-' }}</span>
+          </el-descriptions-item>
+          <el-descriptions-item label="最近审批" v-if="rowData.approved_time">
+            <span class="time-text">{{ rowData.approved_time }}</span>
+          </el-descriptions-item>
+        </el-descriptions>
+      </div>
 
-      <el-descriptions border :column="3" class="detail-descriptions">
-        <el-descriptions-item label="审批单号">
-          {{ rowData.aid ?? '-' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="审批类型">
-          <el-tag :type="getTypeTagType(rowData.type)" size="small">
-            {{ getApprovalTypeText(rowData.type) }}
-          </el-tag>
-        </el-descriptions-item>
-        <el-descriptions-item label="审批状态">
-          <el-tag :type="getStatusTagType(rowData.approval)" size="small">
-            {{ getApprovalStatusText(rowData.approval) }}
-          </el-tag>
-        </el-descriptions-item>
-        <el-descriptions-item label="申请人">
-          {{ rowData.user_name ?? '-' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="申请账号">
-          {{ rowData.apply_account ?? '-' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="申请时间">
-          {{ rowData.apply_time || '-' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="最近审批" v-if="rowData.approved_time">
-          {{ rowData.approved_time || '-' }}
-        </el-descriptions-item>
-      </el-descriptions>
-    </el-card>
-
-    <!-- 审批内容卡片 -->
-    <el-card class="detail-card" shadow="hover">
-      <template #header>
-        <div class="card-header">
-          <span class="card-title">审批内容</span>
+      <!-- 审批内容卡片 -->
+      <div class="Card">
+        <div class="card-section-title">
+          <el-icon class="section-icon"><InfoFilled /></el-icon>
+          审批内容
         </div>
-      </template>
-
-      <el-descriptions border :column="2" class="detail-descriptions">
-        <el-descriptions-item label="用户邮箱">
-          {{ rowData.user_email || '-' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="完成状态">
-          <el-tag :type="getCompletedStatus().type">
-            {{ getCompletedStatus().text }}
-          </el-tag>
-        </el-descriptions-item>
-        <el-descriptions-item label="原因">
-          {{ rowData.reason || '-' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="处理状态">
-          <el-tag :type="getWorkingStatus().type">
-            {{ getWorkingStatus().text }}
-          </el-tag>
-        </el-descriptions-item>
-        <el-descriptions-item label="处理人">
-          {{ rowData.worker_name ?? '-' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="处理人ID">
-          {{ rowData.worker ?? '-' }}
-        </el-descriptions-item>
-      </el-descriptions>
-    </el-card>
+        <el-descriptions border :column="2">
+          <el-descriptions-item label="用户邮箱">{{ rowData.user_email || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="完成状态">
+            <el-tag :type="getCompletedStatus().type" size="small">{{ getCompletedStatus().text }}</el-tag>
+          </el-descriptions-item>
+          <el-descriptions-item label="原因" :span="2">
+            <span class="reason-text">{{ rowData.reason || '-' }}</span>
+          </el-descriptions-item>
+          <el-descriptions-item label="处理状态">
+            <el-tag :type="getWorkingStatus().type" size="small">{{ getWorkingStatus().text }}</el-tag>
+          </el-descriptions-item>
+          <el-descriptions-item label="处理人">{{ rowData.worker_name ?? '-' }}</el-descriptions-item>
+          <el-descriptions-item label="处理人ID">
+            <span class="mono-text">{{ rowData.worker ?? '-' }}</span>
+          </el-descriptions-item>
+        </el-descriptions>
+      </div>
+    </template>
 
     <!-- 空数据提示 -->
-    <el-empty
-      v-if="!rowData.aid"
-      description="暂无审批详情数据"
-      class="empty-tip"
-    >
-      <el-button type="primary" @click="handleBack">返回列表</el-button>
-    </el-empty>
+    <div v-else class="empty-card">
+      <el-empty description="暂无审批详情数据">
+        <el-button type="primary" @click="handleBack">返回列表</el-button>
+      </el-empty>
+    </div>
   </div>
 </template>
 
@@ -91,7 +83,8 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { 
+import { Document, InfoFilled } from '@element-plus/icons-vue'
+import {
   optionTypeMap, 
   approvalStatusMap, 
   completedStatusMap, 
@@ -164,169 +157,172 @@ onMounted(() => {
 
 <style scoped>
 .ApprovalDetail {
-  padding: 20px;
-  background-color: #f5f7fa;
+    padding: 24px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf4 100%);
+    min-height: 100vh;
+    animation: fadeIn 0.5s ease-in;
 }
 
-/* 页面头部样式 */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* 页面头部 */
 .page-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 24px;
-  padding: 8px 0;
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 28px;
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 20px 28px;
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.12);
+    border: 1px solid rgba(102, 126, 234, 0.08);
+    position: relative;
+    overflow: hidden;
+}
+
+.page-header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
 }
 
 .back-btn {
-  margin: 0 16px;
-  border: none;
-  background-color: #f0f7ff;
-  color: #409eff;
-  transition: all 0.3s ease;
+    border: none;
+    background: linear-gradient(135deg, #f0f4ff 0%, #e8ecf4 100%);
+    color: #667eea;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
 }
 
 .back-btn:hover {
-  background-color: #409eff;
-  color: #ffffff;
-  transform: scale(1.1);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #ffffff;
+    transform: scale(1.1);
 }
+
+.header-content { flex: 1; }
 
 .page-title {
-  margin: 0;
-  font-size: 24px;
-  font-weight: 600;
-  color: #1f2937;
-  position: relative;
-  padding-left: 16px;
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0 0 4px 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
-.page-title::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-45%);
-  width: 4px;
-  height: 24px;
-  background: linear-gradient(to bottom, #409eff, #79bbff);
-  border-radius: 2px;
+.page-subtitle {
+    font-size: 13px;
+    color: #7f8c8d;
+    margin: 0;
 }
 
-/* 卡片样式 - 统一风格 */
-.detail-card {
-  margin-bottom: 20px;
-  border-radius: 8px;
-  border: 1px solid #e4e7ed;
-  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.15);
-  overflow: hidden;
-  transition: all 0.3s ease;
+.status-badge {
+    font-size: 14px;
+    padding: 8px 20px;
+    height: auto;
+    border-radius: 20px;
+    font-weight: 500;
 }
 
-.detail-card:hover {
-  box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.3);
+/* 卡片 */
+.Card {
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.12);
+    padding: 28px 32px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(102, 126, 234, 0.08);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: slideUp 0.6s ease-out;
 }
 
-/* 卡片头部样式 */
-:deep(.detail-card .el-card__header) {
-  background-color: #f0f7ff;
-  border-bottom: 1px solid #e4e7ed;
-  padding: 15px 20px;
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.Card:hover {
+    box-shadow: 0 12px 40px rgba(102, 126, 234, 0.18);
+    transform: translateY(-2px);
 }
 
-.card-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: #409eff;
+.card-section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 17px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid rgba(102, 126, 234, 0.1);
 }
 
-/* 描述列表样式 - 统一风格 */
-.detail-descriptions {
-  margin: 10px 0;
+.section-icon {
+    color: #667eea;
+    font-size: 18px;
 }
 
-:deep(.detail-descriptions .el-descriptions__header) {
-  margin-bottom: 0;
+/* descriptions 样式 */
+:deep(.el-descriptions__label) {
+    background: linear-gradient(135deg, #f0f4ff 0%, #e8ecf4 100%) !important;
+    color: #667eea !important;
+    font-weight: 500;
+    width: 110px;
 }
 
-:deep(.detail-descriptions .el-descriptions__body) {
-  border-radius: 8px;
-  overflow: hidden;
-  border: 1px solid #e4e7ed;
+:deep(.el-descriptions__content) {
+    background: #ffffff !important;
+    color: #2c3e50;
 }
 
-:deep(.detail-descriptions .el-descriptions__cell) {
-  padding: 12px 16px;
-  font-size: 14px;
+:deep(.el-descriptions__cell) {
+    padding: 14px 18px !important;
 }
 
-:deep(.detail-descriptions .el-descriptions__label) {
-  background-color: #f0f7ff;
-  color: #409eff;
-  font-weight: 500;
-  width: 120px;
+/* 文本样式 */
+.mono-text {
+    font-family: 'Courier New', monospace;
+    background: rgba(102, 126, 234, 0.08);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #667eea;
 }
 
-:deep(.detail-descriptions .el-descriptions__content) {
-  background-color: #ffffff;
-  color: #333;
+.time-text {
+    color: #7f8c8d;
+    font-size: 13px;
 }
 
-/* 标签样式 - 统一风格 */
-:deep(.el-tag) {
-  border-radius: 4px;
-  padding: 0 8px;
-  height: 24px;
-  line-height: 22px;
-  font-size: 12px;
-  border: none;
-  font-weight: normal;
+.reason-text {
+    color: #2c3e50;
+    line-height: 1.6;
 }
 
-:deep(.el-tag--warning) {
-  background-color: #fdf6ec;
-  color: #e6a23c;
+/* 空状态 */
+.empty-card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 60px 32px;
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.12);
+    border: 1px solid rgba(102, 126, 234, 0.08);
+    text-align: center;
 }
 
-:deep(.el-tag--success) {
-  background-color: #f0f9eb;
-  color: #67c23a;
+/* 按钮 */
+.el-button {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-:deep(.el-tag--danger) {
-  background-color: #fef0f0;
-  color: #f56c6c;
-}
-
-:deep(.el-tag--info) {
-  background-color: #f4f4f5;
-  color: #909399;
-}
-
-:deep(.el-tag--primary) {
-  background-color: #ecf5ff;
-  color: #409eff;
-}
-
-/* 空数据提示 */
-.empty-tip {
-  padding: 60px 0;
-  background-color: #ffffff;
-  border-radius: 8px;
-  border: 1px solid #e4e7ed;
-  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
-  margin-top: 20px;
-}
-
-:deep(.empty-tip .el-empty__description) {
-  color: #909399;
-}
-
+.el-button:not(.is-circle):hover { transform: translateY(-2px); }
 </style>

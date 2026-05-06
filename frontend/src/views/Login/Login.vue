@@ -3,17 +3,17 @@
         <div class="Logo_Box">
             <div class="Logo_Block">
                 <div class="Logo_Header">
-                    &nbsp; A &nbsp; &nbsp; Graduation &nbsp; &nbsp; Project
+                    <!-- &nbsp; A &nbsp; &nbsp; Graduation &nbsp; &nbsp; Project -->
                 </div>
                 <div class="Logo_Title">
-                    蜥蜴的毕设
+                    管理平台
                 </div>
             </div>
         </div>
         <div class="Login_Box">
             <div class="Login_Block">
                 <div class="Welcome_Title">登录账号</div>
-                <el-form ref="formRef" :rules="rules" :model="data.form" style="width: 400px">
+                <el-form ref="formRef" :rules="rules" :model="data.form" style="width: 400px" @keyup.enter="Login">
                     <el-form-item prop="username">
                         <el-input size="large" v-model="data.form.username" placeholder="请输入账号..." prefix-icon="User"/>
                     </el-form-item>

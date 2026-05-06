@@ -1,5 +1,9 @@
 <template>
     <div class="UnifiedApply">
+        <div class="page-header">
+            <h2 class="page-title">统一申请入口</h2>
+        </div>
+
         <!-- 复用搜索模板组件 -->
         <ApprovalSearchTemplate
             ref="approvalSearchRef"
@@ -127,11 +131,11 @@
         </ApprovalDialogTemplate>
         
         <!-- 分页 -->
-        <div style="margin: 12px; display: flex; justify-content: flex-end;">
+        <div class="pagination-box">
             <el-pagination
                 @size-change="GetApplicationList"
                 @current-change="GetApplicationList"
-                layout="total, sizes, prev, pager, next, jumper" 
+                layout="total, sizes, prev, pager, next, jumper"
                 background
                 v-model:current-page="data.pageNum"
                 v-model:page-size="data.pageSize"
@@ -712,53 +716,95 @@ const handleDeleteAllTemFile = () => {
 </script>
 
 <style scoped>
+.UnifiedApply {
+    padding: 24px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf4 100%);
+    min-height: 100vh;
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.page-header {
+    margin-bottom: 28px;
+    text-align: center;
+}
+
+.page-title {
+    font-size: 32px;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.page-subtitle {
+    font-size: 14px;
+    color: #7f8c8d;
+    margin: 0;
+}
+
+.pagination-box {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 8px;
+    padding: 0 4px;
+}
+
 /* 统一卡片风格 */
 .Card {
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.10);
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.12);
     padding: 24px 32px;
     margin-bottom: 20px;
-    transition: box-shadow 0.2s;
+    border: 1px solid rgba(102, 126, 234, 0.08);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
 }
+
+.Card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.Card:hover::before { opacity: 1; }
+
 .Card:hover {
-    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.18);
+    box-shadow: 0 12px 40px rgba(102, 126, 234, 0.18);
+    transform: translateY(-2px);
 }
-/* 统一按钮风格 */
+
+/* 按钮统一 */
 .el-button {
     border-radius: 8px;
     font-weight: 500;
     letter-spacing: 1px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-/* 表格圆角 */
-.el-table {
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.06);
-}
-/* 分页统一 */
-.el-pagination {
-    border-radius: 8px;
-    background: #f7faff;
-    padding: 8px 16px;
-    margin-top: 8px;
-}
-/* 弹窗风格 */
-.el-dialog {
-    border-radius: 16px;
-    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.18);
-}
-.UnifiedApply {
-    background-color: white;
-    padding: 12px 0;
-}
-/* 美化创建模板插槽的样式 */
+
+.el-button:hover { transform: translateY(-2px); }
+.el-button:active { transform: translateY(0); }
+
+/* 创建模板插槽 */
 .create-template-container {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     padding: 24px;
     border-radius: 12px;
     margin-bottom: 20px;
     box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+    animation: slideIn 0.5s ease-out;
 }
 
 .create-template-header {
@@ -794,7 +840,6 @@ const handleDeleteAllTemFile = () => {
     border: none;
     padding: 12px 30px;
     font-weight: 600;
-    letter-spacing: 1px;
     box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
 }
 
@@ -803,7 +848,6 @@ const handleDeleteAllTemFile = () => {
     box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
 }
 
-/* 美化自定义分割线 */
 .custom-divider.create-template-divider {
     margin: 30px 0 20px;
 }
@@ -819,19 +863,17 @@ const handleDeleteAllTemFile = () => {
     box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
-/* 美化表格容器 */
 .table-container {
     background: #f8f9fa;
     border-radius: 12px;
     padding: 20px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    animation: slideIn 0.5s ease-out;
 }
 
-/* 美化表格 */
 .table-container :deep(.el-table) {
     border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
 .table-container :deep(.el-table th) {
@@ -840,16 +882,9 @@ const handleDeleteAllTemFile = () => {
     font-weight: 600;
 }
 
-.table-container :deep(.el-table td) {
-    padding: 12px 0;
-}
-
-/* 美化删除按钮 */
 .table-container :deep(.el-button--danger) {
     background: linear-gradient(135deg, #ff6b6b 0%, #ee5253 100%);
     border: none;
-    padding: 8px 20px;
-    border-radius: 6px;
     transition: all 0.3s ease;
 }
 
@@ -858,20 +893,18 @@ const handleDeleteAllTemFile = () => {
     box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
 }
 
-/* 添加动画效果 */
 @keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-.create-template-container,
-.table-container {
-    animation: slideIn 0.5s ease-out;
+/* 修复子组件中 divider 的背景色 */
+:deep(.el-divider__text) {
+    background-color: transparent !important;
+}
+
+/* 仅对 create-template-divider 保留渐变背景 */
+.custom-divider.create-template-divider :deep(.el-divider__text) {
+    background: linear-gradient(135deg, #667eea, #764ba2) !important;
 }
 </style>

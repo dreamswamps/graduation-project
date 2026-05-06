@@ -1,11 +1,19 @@
 <template>
-    <div style="display: flex; gap: 8px;">
-        <div id="bar_echarts" class="Card" style="flex: 1;height: 400px;"></div>
-        <div id="line_echarts" class="Card" style="flex: 1;height: 400px;"></div>
-    </div>
-    <div style="display: flex; gap: 8px;margin-top: 16px;">
-        <div id="pie_echarts" class="Card" style="flex: 1;height: 400px;"></div>
-        <div id="test_echarts" class="Card" style="flex: 1;height: 400px;"></div>
+    <div class="data-container">
+        <div class="page-header">
+            <h2 class="page-title">数据统计</h2>
+        </div>
+
+        <div class="charts-row">
+            <div id="bar_echarts" class="Card chart-card"></div>
+            <div id="pie_echarts" class="Card chart-card"></div>
+            
+        </div>
+
+        <div class="charts-row" style="display: none;">
+            <div id="line_echarts" class="Card chart-card"></div>
+            <div id="test_echarts" class="Card chart-card"></div>
+        </div>
     </div>
 </template>
 <script setup>
@@ -234,26 +242,152 @@ onMounted(()=>{
 
 </script>
 <style scoped>
+/* 页面容器 */
+.data-container {
+    padding: 24px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf4 100%);
+    min-height: 100vh;
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 页面标题区域 */
+.page-header {
+    margin-bottom: 32px;
+    text-align: center;
+    animation: slideDown 0.6s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.page-title {
+    font-size: 32px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0 0 8px 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.page-subtitle {
+    font-size: 14px;
+    color: #7f8c8d;
+    margin: 0;
+}
+
+/* 图表行容器 */
+.charts-row {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 24px;
+    animation: slideUp 0.7s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 /* 统一卡片风格 */
 .Card {
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.10);
-    padding: 24px 32px;
-    margin-bottom: 20px;
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.12);
+    padding: 28px 36px;
     min-width: 300px;
     min-height: 300px;
-    transition: box-shadow 0.2s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(102, 126, 234, 0.08);
+    position: relative;
+    overflow: hidden;
 }
+
+.Card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.Card:hover::before {
+    transform: scaleX(1);
+}
+
 .Card:hover {
-    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.18);
+    box-shadow: 0 12px 40px rgba(102, 126, 234, 0.20);
+    transform: translateY(-4px);
+    border-color: rgba(102, 126, 234, 0.15);
 }
-.echarts_box {
-    width: 600px;
-    height: 400px;
-    margin-bottom: 12px;
-    background: #f7faff;
-    border-radius: 16px;
-    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.06);
+
+/* 图表卡片 */
+.chart-card {
+    flex: 1;
+    height: 420px;
+}
+
+/* 响应式设计 */
+@media (max-width: 1200px) {
+    .charts-row {
+        flex-direction: column;
+    }
+
+    .chart-card {
+        height: 380px;
+    }
+}
+
+@media (max-width: 768px) {
+    .data-container {
+        padding: 16px;
+    }
+
+    .page-title {
+        font-size: 24px;
+    }
+
+    .charts-row {
+        gap: 16px;
+        margin-bottom: 16px;
+    }
+
+    .Card {
+        padding: 20px 24px;
+    }
+
+    .chart-card {
+        height: 320px;
+    }
 }
 </style>
